@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/reminder.json",
+  "type": "object",
+  "properties": {
+    "reminderType": {
+      "type": "string",
+      "enum": ["Follow-up", "Interview", "Deadline"]
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    }
+  },
+  "additionalProperties": false,
+  "required": ["reminderType", "date", "description"]
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/searchApplications.json",
+  "type": "object",
+  "properties": {
+    "company": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "applied", "interviewed", "offered", "rejected"]
+    },
+    "jobTitle": {
+      "type": "string",
+      "maxLength": 100
+    }
+  },
+  "additionalProperties": false
+}
