@@ -3,6 +3,7 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const db = require("./db");
 const { NotFoundError } = require("./expressError");
 
 const authRoutes = require("./routes/auth");
@@ -14,6 +15,14 @@ const reminderRoutes = require("./routes/reminders");
 const { authenticateJWT } = require("./middleware/auth");
 
 const app = express();
+
+// Connect to the database
+if (process.env.NODE_ENV !== "test") {
+  db.connect()
+  .then(() => console.log("Connected to the database."))
+  .catch(err => console.error("Database connection error:", err.stack));
+}
+
 
 // Middleware
 app.use(cors());
@@ -27,6 +36,10 @@ app.use("/users", userRoutes);
 app.use("/applications", applicationRoutes);
 app.use("/interviews", interviewRoutes);
 app.use("/reminders", reminderRoutes);
+
+app.get("/", (req, res) => {
+  res.send("Welcome to Job Jotter API!");
+});
 
 // 404 Handler
 app.use(function (req, res, next) {

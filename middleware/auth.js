@@ -3,7 +3,7 @@
 /** Convenience middleware to handle common auth cases in routes. */
 
 const jwt = require("jsonwebtoken");
-const { SECRET_KEY } = require("../config");
+const { JWT_SECRET } = require("../config");
 const { UnauthorizedError } = require("../expressError");
 
 /** Middleware: Authenticate user.
@@ -16,9 +16,12 @@ const { UnauthorizedError } = require("../expressError");
 function authenticateJWT(req, res, next) {
   try {
     const authHeader = req.headers && req.headers.authorization;
+    console.log("Authorization Header:", authHeader); // Debugging
     if (authHeader) {
       const token = authHeader.replace(/^[Bb]earer /, "").trim();
-      res.locals.user = jwt.verify(token, SECRET_KEY);
+      console.log("Parsed Token:", token); // Debugging
+      res.locals.user = jwt.verify(token, JWT_SECRET);
+      console.log("Authenticated User:", res.locals.user);
       console.debug("authenticateJWT: Token payload:", res.locals.user); // Debugging
     }
     return next();
@@ -67,8 +70,7 @@ function ensureAdmin(req, res, next) {
 function ensureCorrectUserOrAdmin(req, res, next) {
   try {
     const user = res.locals.user;
-    console.debug("ensureCorrectUserOrAdmin: Token payload:", user); // Debugging
-    console.debug("ensureCorrectUserOrAdmin: Route param username:", req.params.username); // Debugging
+    console.debug("ensureCorrectUserOrAdmin: Token payload:", res.locals.user); // Debugging
 
     if (!(user && (user.isAdmin || user.username === req.params.username))) {
       console.warn("ensureCorrectUserOrAdmin: Unauthorized access attempt."); // Debugging
@@ -79,6 +81,7 @@ function ensureCorrectUserOrAdmin(req, res, next) {
     return next(err);
   }
 }
+
 
 module.exports = {
   authenticateJWT,

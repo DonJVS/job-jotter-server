@@ -3,6 +3,7 @@
 -- Drop tables if they exist (for recreation)
 DROP TABLE IF EXISTS reminders;
 DROP TABLE IF EXISTS interviews;
+DROP TABLE IF EXISTS user_applications;
 DROP TABLE IF EXISTS applications;
 DROP TABLE IF EXISTS users;
 
@@ -12,17 +13,11 @@ CREATE TABLE users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password TEXT NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),  
     is_admin BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-CREATE TABLE user_applications (
-    id SERIAL PRIMARY KEY,
-    application_id INTEGER NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
-    username VARCHAR(50) NOT NULL REFERENCES users(username) ON DELETE CASCADE,
-    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 
 -- Applications Table
 CREATE TABLE applications (
@@ -34,6 +29,14 @@ CREATE TABLE applications (
     date_applied DATE DEFAULT CURRENT_DATE,
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- User Applications Table
+CREATE TABLE user_applications (
+    id SERIAL PRIMARY KEY,
+    application_id INTEGER NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Interviews Table
@@ -56,3 +59,4 @@ CREATE TABLE reminders (
     description TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+

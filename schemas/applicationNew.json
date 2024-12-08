@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "company": { "type": "string", "minLength": 1, "maxLength": 100 },
+    "jobTitle": { "type": "string", "minLength": 1, "maxLength": 100 },
+    "status": { "type": "string", "enum": ["pending", "applied", "interviewed", "offered", "rejected"] },
+    "dateApplied": { "type": "string", "format": "date" },
+    "notes": { "type": "string", "maxLength": 1000 }
+  },
+  "required": ["company", "jobTitle", "status", "dateApplied"],
+  "additionalProperties": false
+}
+

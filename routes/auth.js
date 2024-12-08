@@ -2,11 +2,11 @@
 
 /** Routes for authentication. */
 
-const User = require("../models/user");
+const User = require("../models/User");
 const express = require("express");
 const router = new express.Router();
 const { createToken } = require("../helpers/tokens");
-const validateSchema = require("../middleware/validateSchema");
+const validateSchema = require("../middleware/validation");
 const userAuthSchema = require("../schemas/userAuth.json");
 const userRegisterSchema = require("../schemas/userRegister.json");
 

@@ -4,10 +4,12 @@
   "type": "object",
   "properties": {
     "username": {
-      "type": "string"
+      "type": "string",
+      "minLenght": 1
     },
     "password": {
-      "type": "string"
+      "type": "string",
+      "minLenght": 1
     }
   },
   "additionalProperties": false,

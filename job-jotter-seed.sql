@@ -7,10 +7,10 @@ TRUNCATE TABLE applications RESTART IDENTITY CASCADE;
 TRUNCATE TABLE users RESTART IDENTITY CASCADE;
 
 -- Insert Users
-INSERT INTO users (username, password, email)
+INSERT INTO users (username, password, email, first_name, last_name, is_admin)
 VALUES 
-('john_doe', '$2b$12$examplehashedpassword1', 'john.doe@example.com'), -- Replace with hashed passwords
-('jane_smith', '$2b$12$examplehashedpassword2', 'jane.smith@example.com');
+('john_doe', '$2b$12$s.bWKH3bNrHfiFgEzI3QeeQ3ep9RTqw2F9WYbh40Ubcr5rhL6xOPS', 'john.doe@example.com', 'John', 'Doe', true), -- Replace with hashed passwords
+('jane_smith', '$2b$12$CTl6rfVxj2CwESjhmrlF5O5C34rw5wax0gFL86VxxjUcO6JeN/yOq', 'jane.smith@example.com', 'Jane', 'Smith', false);
 
 -- Insert Applications
 INSERT INTO applications (user_id, company, job_title, status, date_applied, notes)
