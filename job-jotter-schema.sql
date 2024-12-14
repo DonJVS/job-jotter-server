@@ -53,10 +53,12 @@ CREATE TABLE interviews (
 -- Reminders Table
 CREATE TABLE reminders (
     id SERIAL PRIMARY KEY,
+    application_id INTEGER NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    reminder_type VARCHAR(50) NOT NULL, -- e.g., 'Follow-up', 'Interview', 'Deadline'
+    reminder_type VARCHAR(50) NOT NULL CHECK (reminder_type IN ('Follow-up', 'Interview', 'Deadline', 'Prep')),
     date DATE NOT NULL,
     description TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 

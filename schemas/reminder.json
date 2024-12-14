@@ -5,7 +5,7 @@
   "properties": {
     "reminderType": {
       "type": "string",
-      "enum": ["Follow-up", "Interview", "Deadline"]
+      "enum": ["Follow-up", "Interview", "Deadline", "Prep"]
     },
     "date": {
       "type": "string",

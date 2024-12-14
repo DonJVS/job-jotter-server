@@ -21,7 +21,7 @@ const router = express.Router();
  *
  * Authorization required: logged-in user or admin
  */
-router.post("/", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.post("/", ensureLoggedIn, async function (req, res, next) {
   try {
     console.log("Request Body:", req.body); // Log incoming request body
     const validator = jsonschema.validate(req.body, interviewNewSchema);
@@ -60,9 +60,10 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
  *
  * Authorization required: admin or same user associated with the application
  */
-router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.get("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
     const interview = await Interview.get(req.params.id);
+    if (!interview) throw new NotFoundError(`No interview with ID: ${req.params.id}`);
     return res.json({ interview });
   } catch (err) {
     return next(err);
@@ -79,7 +80,7 @@ router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
  *
  * Authorization required: admin or same user associated with the application
  */
-router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.patch("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, interviewUpdateSchema);
     if (!validator.valid) {
@@ -99,7 +100,7 @@ router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
  * Deletes an interview.
  * Authorization required: admin or same user associated with the application
  */
-router.delete("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.delete("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
     await Interview.remove(req.params.id);
     return res.json({ deleted: req.params.id });

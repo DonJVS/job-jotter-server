@@ -5,6 +5,8 @@ const { ensureLoggedIn, ensureCorrectUserOrAdmin } = require("../middleware/auth
 const jsonschema = require("jsonschema");
 
 const Application = require("../models/Application");
+const Reminder = require("../models/Reminder");
+const Interview = require("../models/Interview")
 const applicationNewSchema = require("../schemas/applicationNew.json");
 const applicationUpdateSchema = require("../schemas/applicationUpdate.json");
 const validateSchema = require("../middleware/validation");
@@ -35,19 +37,23 @@ router.post("/", ensureLoggedIn, validateSchema(applicationNewSchema), async fun
 });
 
 
-/** GET / => { applications: [ { id, userId, company, jobTitle, status, dateApplied, notes }, ... ] }
+/** GET /:username => { applications: [ { id, company, jobTitle, status, dateApplied, notes }, ... ] }
  *
- * Returns all applications.
- * Authorization required: admin
+ * Returns all applications for the specified user.
+ * Authorization required: correct user or admin
  */
-router.get("/", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.get("/", ensureLoggedIn, async function (req, res, next) {
   try {
-    const applications = await Application.findAll();
+    const username = res.locals.user.username;
+    const applications = await Application.findByUser(username);
     return res.json({ applications });
   } catch (err) {
     return next(err);
   }
 });
+
+
+
 
 /** GET /:id => { application }
  *
@@ -56,9 +62,9 @@ router.get("/", ensureCorrectUserOrAdmin, async function (req, res, next) {
  *
  * Authorization required: admin or same user who created the application
  */
-router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.get("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
-    const application = await Application.get(req.params.id);
+    const application = await Application.getWithDetails(req.params.id);
     return res.json({ application });
   } catch (err) {
     return next(err);
@@ -75,7 +81,7 @@ router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
  *
  * Authorization required: admin or same user who created the application
  */
-router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.patch("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, applicationUpdateSchema);
     if (!validator.valid) {
@@ -84,6 +90,7 @@ router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
     }
 
     const application = await Application.update(req.params.id, req.body);
+    if (!application) throw new NotFoundError(`No application: ${req.params.id}`);
     return res.json({ application });
   } catch (err) {
     return next(err);
@@ -95,7 +102,7 @@ router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
  * Deletes an application.
  * Authorization required: admin or same user who created the application
  */
-router.delete("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.delete("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
     await Application.remove(req.params.id);
     return res.json({ deleted: req.params.id });
@@ -103,5 +110,36 @@ router.delete("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) 
     return next(err);
   }
 });
+
+/** GET /applications/:id/interviews => { interviews } 
+ *
+ * Returns all interviews for a specific application.
+ *
+ * Authorization required: admin or the user who owns the application
+ */
+router.get("/:id/interviews", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const interviews = await Interview.findByApplication(req.params.id);
+    return res.json({ interviews });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/** GET /:id/reminders => { reminders }
+ *
+ * Returns all reminders for a specific application.
+ *
+ * Authorization required: admin or the user who owns the application
+ */
+router.get("/:id/reminders", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const reminders = await Reminder.findByApplication(req.params.id);
+    return res.json({ reminders });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 
 module.exports = router;

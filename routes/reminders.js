@@ -21,7 +21,7 @@ const router = express.Router();
  *
  * Authorization required: logged-in user or admin
  */
-router.post("/", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.post("/", ensureLoggedIn, async function (req, res, next) {
   try {
     // Validate the request body using the schema
     const validator = jsonschema.validate(req.body, reminderNewSchema);
@@ -65,9 +65,12 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
  *
  * Authorization required: admin or same user who created the reminder
  */
-router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.get("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
+    const id = req.params.id;
+    console.log("Fetching reminder with ID:", id, "Type:", typeof id); // Debugging log
     const reminder = await Reminder.get(req.params.id);
+    if (!reminder) throw new NotFoundError(`No reminder with ID: ${req.params.id}`);
     return res.json({ reminder });
   } catch (err) {
     return next(err);
@@ -104,7 +107,7 @@ router.patch("/:id", ensureLoggedIn, async function (req, res, next) {
  * Deletes a reminder.
  * Authorization required: admin or same user who created the reminder
  */
-router.delete("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.delete("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
     await Reminder.remove(req.params.id);
     return res.json({ deleted: req.params.id });
@@ -112,5 +115,6 @@ router.delete("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) 
     return next(err);
   }
 });
+
 
 module.exports = router;

@@ -33,14 +33,10 @@ class Interview {
    */
   static async get(id) {
     const result = await db.query(
-      `SELECT id,
-              application_id AS "applicationId",
-              date,
-              time,
-              location,
-              notes
-       FROM interviews
-       WHERE id = $1`,
+      `SELECT i.id, i.date, i.time, i.location, i.notes, a.company
+       FROM interviews i
+       JOIN applications a ON i.application_id = a.id
+       WHERE i.id = $1`,
       [id]
     );
 
@@ -63,7 +59,8 @@ class Interview {
               i.date,
               i.time,
               i.location,
-              i.notes
+              i.notes,
+              a.company
        FROM interviews i
        JOIN applications a ON i.application_id = a.id
        WHERE a.user_id = $1`,
@@ -79,7 +76,7 @@ class Interview {
    */
   static async findByApplication(applicationId) {
     const result = await db.query(
-      `SELECT id, date, time, location, notes
+      `SELECT id, application_id AS "applicationId", date, time, location, notes
        FROM interviews
        WHERE application_id = $1`,
       [applicationId]

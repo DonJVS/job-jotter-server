@@ -15,19 +15,26 @@ const { UnauthorizedError } = require("../expressError");
  */
 function authenticateJWT(req, res, next) {
   try {
+    // Get the Authorization header
     const authHeader = req.headers && req.headers.authorization;
-    console.log("Authorization Header:", authHeader); // Debugging
+    console.debug("Authorization Header:", authHeader);
+
     if (authHeader) {
-      const token = authHeader.replace(/^[Bb]earer /, "").trim();
-      console.log("Parsed Token:", token); // Debugging
+      // Extract the token by removing "Bearer " prefix
+      const token = authHeader.replace(/^[Bb]earer\s/, "").replace(/"/g, "").trim();
+      console.debug("Extracted Token:", token);
+
+      // Verify the token and set the payload in res.locals.user
       res.locals.user = jwt.verify(token, JWT_SECRET);
-      console.log("Authenticated User:", res.locals.user);
-      console.debug("authenticateJWT: Token payload:", res.locals.user); // Debugging
+      console.debug("Decoded Token Payload:", res.locals.user);
+    } else {
+      console.warn("authenticateJWT: Missing Authorization Header.");
     }
-    return next();
+
+    return next(); // Proceed to the next middleware or route
   } catch (err) {
-    console.warn("authenticateJWT: Invalid or missing token."); // Debugging
-    return next();
+    console.warn("authenticateJWT: Invalid token or verification failed.");
+    return next(); // Proceed without user authentication (non-blocking)
   }
 }
 
@@ -70,17 +77,24 @@ function ensureAdmin(req, res, next) {
 function ensureCorrectUserOrAdmin(req, res, next) {
   try {
     const user = res.locals.user;
-    console.debug("ensureCorrectUserOrAdmin: Token payload:", res.locals.user); // Debugging
+    if(!user) throw new UnauthorizedError("Unauthorized access.");
+    console.debug("ensureCorrectUserOrAdmin: Token payload:", user);
 
-    if (!(user && (user.isAdmin || user.username === req.params.username))) {
-      console.warn("ensureCorrectUserOrAdmin: Unauthorized access attempt."); // Debugging
-      throw new UnauthorizedError("Unauthorized access.");
+    // Allow access if the user is admin
+    if (user.isAdmin) return next();
+
+    // Check if username matches when a specific user is required
+    if (req.params.username && user.username === req.params.username) {
+      return next();
     }
-    return next();
+
+    console.warn("ensureCorrectUserOrAdmin: Unauthorized access attempt.");
+    throw new UnauthorizedError("Unauthorized access.");
   } catch (err) {
     return next(err);
   }
 }
+
 
 
 module.exports = {

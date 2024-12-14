@@ -63,7 +63,7 @@ class Application {
    * Returns { id, userId, company, jobTitle, status, dateApplied, notes }
    * Throws NotFoundError if not found.
    */
-  static async get(id) {
+  static async getWithDetails(id) {
     const result = await db.query(
       `SELECT id,
               user_id AS "userId",
@@ -81,6 +81,30 @@ class Application {
 
     if (!application) throw new NotFoundError(`No application: ${id}`);
 
+    const interviewsRes = await db.query(
+      `SELECT id, 
+              date, 
+              time, 
+              location, 
+              notes 
+       FROM interviews
+       WHERE application_id = $1`,
+      [id]
+    );
+
+    const remindersRes = await db.query(
+      `SELECT id, 
+              reminder_type AS "reminderType", 
+              date, 
+              description 
+       FROM reminders
+       WHERE user_id = $1`,
+      [application.userId]
+    );
+
+    application.interviews = interviewsRes.rows;
+    application.reminders = remindersRes.rows;
+
     return application;
   }
 
@@ -88,16 +112,19 @@ class Application {
    *
    * Returns [{ id, company, job_title, status, date_applied, notes }, ...]
    */
-  static async findByUser(userId) {
+  static async findByUser(username) {
     const result = await db.query(
-      `SELECT id, company, job_title AS "jobTitle", status, date_applied AS "dateApplied", notes
-       FROM applications
-       WHERE user_id = $1`,
-      [userId]
+      `SELECT a.id, a.company, a.job_title AS "jobTitle", 
+              a.status, a.date_applied AS "dateApplied", a.notes
+       FROM applications a
+       JOIN users u ON a.user_id = u.id
+       WHERE u.username = $1`, // Use username directly as a string
+      [username] // Pass username here
     );
-
+  
     return result.rows;
   }
+  
 
     /** Update an application.
    *

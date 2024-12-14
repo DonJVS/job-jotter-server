@@ -8,20 +8,25 @@ const { sqlForPartialUpdate } = require("../helpers/sql");
 class Reminder {
   /** Add a new reminder.
    *
-   * Returns { id, user_id, reminder_type, date, description }
+   * Returns { id, applicationId, userId, reminderType, date, description }
    */
-  static async add({ userId, reminderType, date, description }) {
-    if (!userId || !reminderType || !date || !description) {
+  static async add({ applicationId, userId, reminderType, date, description }) {
+    if (!applicationId || !userId || !reminderType || !date || !description) {
       throw new BadRequestError("Missing required fields for reminder creation.");
     }
-
+  
     const result = await db.query(
-      `INSERT INTO reminders (user_id, reminder_type, date, description)
-       VALUES ($1, $2, $3, $4)
-       RETURNING id, user_id AS "userId", reminder_type AS "reminderType", date, description`,
-      [userId, reminderType, date, description]
+      `INSERT INTO reminders (application_id, user_id, reminder_type, date, description)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, 
+                 application_id AS "applicationId", 
+                 user_id AS "userId", 
+                 reminder_type AS "reminderType", 
+                 date, 
+                 description`,
+      [applicationId, userId, reminderType, date, description]
     );
-
+  
     return result.rows[0];
   }
 
@@ -31,9 +36,14 @@ class Reminder {
    */
   static async findAll(userId) {
     const result = await db.query(
-      `SELECT id, user_id AS "userId", reminder_type AS "reminderType", date, description
-       FROM reminders
-       WHERE user_id = $1`,
+      `SELECT r.id, 
+              r.reminder_type AS "reminderType", 
+              r.date, 
+              r.description, 
+              a.company
+       FROM reminders r
+       JOIN applications a ON r.application_id = a.id
+       WHERE a.user_id = $1`,
       [userId]
     );
 
@@ -48,18 +58,19 @@ class Reminder {
    */
   static async get(id) {
     const result = await db.query(
-      `SELECT id, 
-              user_id AS "userId", 
-              reminder_type AS "reminderType", 
-              date, 
-              description
-       FROM reminders
-       WHERE id = $1`,
+      `SELECT r.id, 
+              r.reminder_type AS "reminderType", 
+              r.date, 
+              r.description, 
+              a.company
+       FROM reminders r
+       JOIN applications a ON r.application_id = a.id
+       WHERE r.id = $1`,
       [id]
     );
-
+  
     const reminder = result.rows[0];
-
+  
     if (!reminder) {
       throw new NotFoundError(`No reminder with ID: ${id}`);
     }
@@ -67,15 +78,37 @@ class Reminder {
     return reminder;
   }
 
+  /** Get reminders for a specific application by ID. */
+static async findByApplication(applicationId) {
+  const result = await db.query(
+    `SELECT id, 
+            application_id AS "applicationId", 
+            reminder_type AS "reminderType", 
+            date, 
+            description
+     FROM reminders
+     WHERE application_id = $1`,
+    [applicationId]
+  );
+
+  return result.rows; // Return all reminders associated with the application
+}
+
+
   /** Get all reminders for a user.
    *
    * Returns [{ id, reminder_type, date, description }, ...]
    */
   static async findByUser(userId) {
     const result = await db.query(
-      `SELECT id, user_id AS "userId", reminder_type AS "reminderType", date, description
-       FROM reminders
-       WHERE user_id = $1`,
+      `SELECT r.id, 
+              r.reminder_type AS "reminderType", 
+              r.date, 
+              r.description, 
+              a.company
+       FROM reminders r
+       JOIN applications a ON r.application_id = a.id
+       WHERE a.user_id = $1`,
       [userId]
     );
 
@@ -91,25 +124,29 @@ class Reminder {
    * Throws NotFoundError if the reminder does not exist.
    */
   static async update(reminderId, data) {
-    const { setCols, values } = sqlForPartialUpdate(data, {
-      reminderType: "reminder_type",
-    });
+  const { setCols, values } = sqlForPartialUpdate(data, {
+    reminderType: "reminder_type",
+  });
 
-    const idVarIdx = "$" + (values.length + 1);
+  const idVarIdx = "$" + (values.length + 1);
 
-    const querySql = `
-      UPDATE reminders
-      SET ${setCols}
-      WHERE id = ${idVarIdx}
-      RETURNING id, user_id AS "userId", reminder_type AS "reminderType", date, description`;
+  const querySql = `
+    UPDATE reminders
+    SET ${setCols}
+    WHERE id = ${idVarIdx}
+    RETURNING id, 
+              application_id AS "applicationId", 
+              reminder_type AS "reminderType", 
+              date, 
+              description`;
 
-    const result = await db.query(querySql, [...values, reminderId]);
-    const reminder = result.rows[0];
+  const result = await db.query(querySql, [...values, reminderId]);
+  const reminder = result.rows[0];
 
-    if (!reminder) throw new NotFoundError(`No reminder: ${reminderId}`);
+  if (!reminder) throw new NotFoundError(`No reminder: ${reminderId}`);
 
-    return reminder;
-  }
+  return reminder;
+}
 
   /** Delete a reminder by id; returns undefined. */
   static async remove(id) {

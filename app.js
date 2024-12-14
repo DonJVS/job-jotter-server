@@ -1,7 +1,7 @@
 "use strict";
 
-const express = require("express");
 const cors = require("cors");
+const express = require("express");
 const morgan = require("morgan");
 const db = require("./db");
 const { NotFoundError } = require("./expressError");
@@ -11,10 +11,30 @@ const userRoutes = require("./routes/users");
 const applicationRoutes = require("./routes/applications");
 const interviewRoutes = require("./routes/interviews");
 const reminderRoutes = require("./routes/reminders");
+const oauthRouter = require("./routes/oauthRouter");
+const googleCalendarRoutes = require("./routes/googleCalendarRoutes");
 
 const { authenticateJWT } = require("./middleware/auth");
 
 const app = express();
+
+//CORS setup
+const allowedOrigins = [
+  "http://localhost:3000", // Local frontend during development
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // Allow credentials (e.g., cookies, Authorization headers)
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed HTTP methods
+  allowedHeaders: ["Authorization", "Content-Type", "Accept"], // Allow required headers
+};
 
 // Connect to the database
 if (process.env.NODE_ENV !== "test") {
@@ -25,13 +45,15 @@ if (process.env.NODE_ENV !== "test") {
 
 
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
 
 // Routes
 app.use("/auth", authRoutes);
+app.use("/auth/google", oauthRouter);
+app.use("/google-calendar", googleCalendarRoutes);
 app.use("/users", userRoutes);
 app.use("/applications", applicationRoutes);
 app.use("/interviews", interviewRoutes);

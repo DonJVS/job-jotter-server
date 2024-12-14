@@ -4,7 +4,7 @@
 
 const jsonschema = require("jsonschema");
 const express = require("express");
-const { ensureCorrectUserOrAdmin, ensureAdmin, authenticateJWT } = require("../middleware/auth");
+const { authenticateJWT, ensureCorrectUserOrAdmin, ensureAdmin } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/User");
 const { createToken } = require("../helpers/tokens");
@@ -12,6 +12,7 @@ const userNewSchema = require("../schemas/userNew.json");
 const userUpdateSchema = require("../schemas/userUpdate.json");
 
 const router = express.Router();
+router.use(authenticateJWT);
 
 /** POST / { user }  => { user, token }
  *
@@ -62,7 +63,7 @@ router.get("/", ensureAdmin, async function (req, res, next) {
  *
  * Authorization required: admin or same-user-as-:username
  */
-router.get("/:username", authenticateJWT, ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.get("/:username", ensureCorrectUserOrAdmin, async function (req, res, next) {
   try {
     const { username } = req.params;
     const user = await User.get(username);

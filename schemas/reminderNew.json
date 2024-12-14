@@ -2,8 +2,8 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "userId": { "type": "integer" },
-    "reminderType": { "type": "string", "enum": ["Follow-up", "Interview", "Deadline"] },
+    "applicationId": { "type": "integer" },
+    "reminderType": { "type": "string", "enum": ["Follow-up", "Interview", "Deadline", "Prep"] },
     "date": { "type": "string", "format": "date" },
     "description": { "type": "string", "minLength": 1, "maxLength": 500 }
   },
