@@ -32,20 +32,20 @@ const corsOptions = {
     }
   },
   credentials: true, // Allow credentials (e.g., cookies, Authorization headers)
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed HTTP methods
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"], // Allowed HTTP methods
   allowedHeaders: ["Authorization", "Content-Type", "Accept"], // Allow required headers
 };
 
 // Connect to the database
 if (process.env.NODE_ENV !== "test") {
   db.connect()
-  .then(() => console.log("Connected to the database."))
   .catch(err => console.error("Database connection error:", err.stack));
 }
 
 
 // Middleware
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);

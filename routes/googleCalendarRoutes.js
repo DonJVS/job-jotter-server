@@ -50,13 +50,80 @@ router.post("/events", ensureLoggedIn, async (req, res) => {
       requestBody: event,
     });
 
-    console.log("Event created:", result.data);
-
     res.json(result.data);
   } catch (err) {
     console.error("Error adding event:", err);
     res.status(500).json({ error: "Failed to add event." });
   }
 });
+
+// PATCH /google-calendar/events/:eventId - Partially update an event
+router.patch("/events/:eventId", ensureLoggedIn, async (req, res) => {
+  const { eventId } = req.params;
+  const { summary, description, location, start, end } = req.body;
+
+  if (!eventId) {
+    return res.status(400).json({ error: "Event ID is required." });
+  }
+
+  try {
+    const auth = await authorize(); // Authorize user
+    const calendar = google.calendar({ version: "v3", auth });
+
+    // Build the update object
+    const updateFields = {};
+    if (summary) updateFields.summary = summary;
+    if (description) updateFields.description = description;
+    if (location) updateFields.location = location;
+    if (start) updateFields.start = start; // Ensure `start` has correct structure
+    if (end) updateFields.end = end; // Ensure `end` has correct structure
+
+    // Send the patch request to Google Calendar API
+    const result = await calendar.events.patch({
+      calendarId: "primary",
+      eventId,
+      requestBody: updateFields,
+    });
+
+    res.status(200).json({ message: `Event updated successfully.`, event: result.data });
+  } catch (err) {
+    if (err.code === 404) {
+      console.error(`Event with ID ${eventId} not found.`);
+      return res.status(404).json({ error: `Event with ID ${eventId} not found.` });
+    }
+    console.error("Error updating event:", err);
+    res.status(500).json({ error: "Failed to update event." });
+  }
+});
+
+
+// Delete an event
+router.delete("/events/:eventId", async (req, res) => {
+  const { eventId } = req.params;
+
+  if (!eventId) {
+    return res.status(400).json({ error: "Event ID is required." });
+  }
+
+  try {
+    const auth = await authorize();
+    const calendar = google.calendar({ version: "v3", auth });
+
+    await calendar.events.delete({
+      calendarId: "primary",
+      eventId,
+    });
+
+    res.status(200).json({ message: `Event with ID ${eventId} deleted.` });
+  } catch (err) {
+    if (err.code === 404) {
+      console.error(`Event with ID ${eventId} not found.`);
+      return res.status(404).json({ error: `Event with ID ${eventId} not found.` });
+    }
+    console.error("Error deleting event:", err.response?.data || err);
+    res.status(500).json({ error: "Failed to delete event." });
+  }
+});
+
 
 module.exports = router;

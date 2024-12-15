@@ -17,16 +17,13 @@ function authenticateJWT(req, res, next) {
   try {
     // Get the Authorization header
     const authHeader = req.headers && req.headers.authorization;
-    console.debug("Authorization Header:", authHeader);
 
     if (authHeader) {
       // Extract the token by removing "Bearer " prefix
       const token = authHeader.replace(/^[Bb]earer\s/, "").replace(/"/g, "").trim();
-      console.debug("Extracted Token:", token);
 
       // Verify the token and set the payload in res.locals.user
       res.locals.user = jwt.verify(token, JWT_SECRET);
-      console.debug("Decoded Token Payload:", res.locals.user);
     } else {
       console.warn("authenticateJWT: Missing Authorization Header.");
     }
@@ -45,7 +42,6 @@ function authenticateJWT(req, res, next) {
 function ensureLoggedIn(req, res, next) {
   try {
     if (!res.locals.user) {
-      console.warn("ensureLoggedIn: No user logged in."); // Debugging
       throw new UnauthorizedError("Must be logged in.");
     }
     return next();
@@ -61,7 +57,6 @@ function ensureLoggedIn(req, res, next) {
 function ensureAdmin(req, res, next) {
   try {
     if (!res.locals.user || !res.locals.user.isAdmin) {
-      console.warn("ensureAdmin: User is not an admin."); // Debugging
       throw new UnauthorizedError("Must be an admin.");
     }
     return next();
@@ -78,7 +73,6 @@ function ensureCorrectUserOrAdmin(req, res, next) {
   try {
     const user = res.locals.user;
     if(!user) throw new UnauthorizedError("Unauthorized access.");
-    console.debug("ensureCorrectUserOrAdmin: Token payload:", user);
 
     // Allow access if the user is admin
     if (user.isAdmin) return next();

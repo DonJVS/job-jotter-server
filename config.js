@@ -24,7 +24,6 @@ function getDatabaseUri() {
       ? process.env.TEST_DATABASE_URL || "job_jotter_test"
       : process.env.DATABASE_URL || "job_jotter";
 
-  console.log("Resolved Database URI:".blue, uri); // Debugging
   return uri;
 }
 

@@ -17,8 +17,6 @@ const {
 
 beforeAll(async () => {
   await commonBeforeAll();
-  console.log("Test User Tokens after commonBeforeAll:", testUserTokens); // Debugging
-  console.log("John Doe Token before tests:", testUserTokens.john_doe); // Debugging
 });
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
@@ -28,15 +26,7 @@ afterAll(commonAfterAll);
 
 describe("POST /users", function () {
   test("works for admins: create non-admin", async function () {
-    console.log("Token:", testUserTokens.admin);
-    console.log("Request Body:", {
-      username: "NewUser",
-      firstName: "First-new",
-      lastName: "Last-new",
-      password: "password-new",
-      email: "new@email.com",
-      isAdmin: false,
-    });
+
     const resp = await request(app)
         .post("/users")
         .send({

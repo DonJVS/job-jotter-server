@@ -38,7 +38,6 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
     const reminder = await Reminder.add(reminderData);
     return res.status(201).json({ reminder });
   } catch (err) {
-    console.error("Error in POST /reminders:", err); // Debugging
     return next(err);
   }
 });
@@ -68,7 +67,6 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
 router.get("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
     const id = req.params.id;
-    console.log("Fetching reminder with ID:", id, "Type:", typeof id); // Debugging log
     const reminder = await Reminder.get(req.params.id);
     if (!reminder) throw new NotFoundError(`No reminder with ID: ${req.params.id}`);
     return res.json({ reminder });

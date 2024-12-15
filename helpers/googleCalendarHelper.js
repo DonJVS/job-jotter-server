@@ -74,10 +74,12 @@ async function authorize() {
  */
 async function listEvents(auth) {
   const calendar = google.calendar({version: 'v3', auth});
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
   const res = await calendar.events.list({
     calendarId: 'primary',
-    timeMin: new Date().toISOString(),
-    maxResults: 10,
+    timeMin: oneMonthAgo.toISOString(),
+    maxResults: 50,
     singleEvents: true,
     orderBy: 'startTime',
   });
@@ -86,10 +88,10 @@ async function listEvents(auth) {
     console.log('No upcoming events found.');
     return;
   }
-  console.log('Upcoming 10 events:');
+  console.log('Upcoming 50 events:');
   events.map((event, i) => {
     const start = event.start.dateTime || event.start.date;
-    console.log(`${start} - ${event.summary}`);
+    console.log(`${event.id} - ${start} - ${event.summary}`);
   });
 
   return res.data.items || [];

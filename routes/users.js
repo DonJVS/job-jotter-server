@@ -125,7 +125,6 @@ router.post("/:username/applications/:id", ensureCorrectUserOrAdmin, async funct
     await User.applyToJob(req.params.username, applicationId);
     return res.status(201).json({ applied: applicationId });
   } catch (err) {
-    console.error("Error in POST /:username/applications/:id:", err); // Debugging
     return next(err);
   }
 });

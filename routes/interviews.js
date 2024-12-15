@@ -23,7 +23,6 @@ const router = express.Router();
  */
 router.post("/", ensureLoggedIn, async function (req, res, next) {
   try {
-    console.log("Request Body:", req.body); // Log incoming request body
     const validator = jsonschema.validate(req.body, interviewNewSchema);
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);
@@ -33,7 +32,6 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
     const interview = await Interview.add(req.body);
     return res.status(201).json({ interview });
   } catch (err) {
-    console.error("Error in POST /interviews:", err); // Log errors for debugging
     return next(err);
   }
 });

@@ -38,10 +38,7 @@ async function commonBeforeAll() {
 
     // Generate tokens for test users
     users.rows.forEach((user) => {
-      console.log(`Creating token for user: ${user.username}`); // Debugging
-      console.log("JWT_SECRET used:",JWT_SECRET); // Ensure the key matches your app
       testUserTokens[user.username] = createToken({ id: user.id, username: user.username, isAdmin: user.isAdmin });
-      console.log(`Token created for ${user.username}: ${testUserTokens[user.username]}`); // Debugging
     });
 
     // Add admin token specifically for ease of access
@@ -76,7 +73,6 @@ async function commonBeforeAll() {
       [testApplicationIds[0], testApplicationIds[1]]
     );
 
-    console.log("Inserted Interviews:", interviews.rows); // Debugging
     testInterviewIds.push(...interviews.rows.map((r) => r.id));
 
     // Insert reminders
@@ -92,7 +88,6 @@ async function commonBeforeAll() {
     );
     testReminderIds.push(...reminders.rows.map((r) => r.id));
 
-    console.log("Test data successfully inserted.");
   } catch (err) {
     console.error("Error in commonBeforeAll:", err);
     throw err;
@@ -112,10 +107,8 @@ async function commonAfterEach() {
 }
 
 async function commonAfterAll() {
-  console.log("Closing database connection...");
   try {
     await db.end();
-    console.log("Database connection closed.");
   } catch (err) {
     console.error("Error closing database connection:", err);
   }

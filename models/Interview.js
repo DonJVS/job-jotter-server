@@ -11,7 +11,6 @@ class Interview {
    * Returns { id, application_id, date, time, location, notes }
    */
   static async add({ applicationId, date, time, location, notes }) {
-    console.log("Inputs to add:", { applicationId, date, time, location, notes });
     if (!applicationId || !date || !time || !location) {
       throw new BadRequestError("Missing required fields for interview creation.");
     }

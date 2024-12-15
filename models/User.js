@@ -96,7 +96,6 @@ class User {
       throw new TypeError("Username is required");
     }
   
-    console.log("Getting user with username:", username); // Debugging
   
     const userRes = await db.query(
       `SELECT id, 
@@ -115,8 +114,7 @@ class User {
     if (!user) {
       throw new NotFoundError(`No user: ${username}`);
     }
-  
-    console.log("Found user:", user); // Debugging
+
   
     const applicationsRes = await db.query(
       `SELECT id, 
@@ -130,7 +128,6 @@ class User {
   
     user.applications = applicationsRes.rows;
   
-    console.log("User applications:", user.applications); // Debugging
   
     return user;
   }

@@ -9,15 +9,11 @@ const testInterviewIds = [];
 const testReminderIds = [];
 
 async function commonBeforeAll() {
-  console.log("Starting commonBeforeAll...");
 
   try {
     // Clear all tables and reset identities
-    console.time("TRUNCATE Queries");
     await db.query("TRUNCATE reminders, interviews, applications, users RESTART IDENTITY CASCADE");
-    console.timeEnd("TRUNCATE Queries");
 
-    console.log("Inserting test data...");
 
     // Insert Users
     const hashedPasswords = await Promise.all([
@@ -49,9 +45,7 @@ async function commonBeforeAll() {
     testApplicationIds.push(...applications.rows.map((row) => row.id));
 
     const result = await db.query("SELECT * FROM applications ORDER BY id");
-    console.log("Applications in database:", result.rows);
 
-    console.log("testApplicationIds after applications insert:", testApplicationIds);
 
     // Insert Interviews
     const interviews = await db.query(
@@ -66,7 +60,6 @@ async function commonBeforeAll() {
     );
     testInterviewIds.push(...interviews.rows.map((row) => row.id));
 
-    console.log("Inserted interview IDs:", testInterviewIds);
 
     // Insert Reminders
     const reminders = await db.query(
@@ -81,7 +74,6 @@ async function commonBeforeAll() {
     );
     testReminderIds.push(...reminders.rows.map((row) => row.id));
 
-    console.log("Test data successfully inserted.");
   } catch (err) {
     console.error("Error in commonBeforeAll:", err);
     throw err;
@@ -89,21 +81,15 @@ async function commonBeforeAll() {
 }
 
 async function commonBeforeEach() {
-  console.time("commonBeforeEach");
   await db.query("BEGIN");
-  console.timeEnd("commonBeforeEach");
 }
 
 async function commonAfterEach() {
-  console.time("commonAfterEach");
   await db.query("ROLLBACK");
-  console.timeEnd("commonAfterEach");
 }
 
 async function commonAfterAll() {
-  console.log("Closing database connection...");
   await db.end();
-  console.log("Database connection closed.");
 }
 
 module.exports = {
