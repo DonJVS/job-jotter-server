@@ -8,6 +8,7 @@ const {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
+  testApplicationIds,
   testReminderIds,
 } = require("./_testCommon");
 
@@ -17,14 +18,15 @@ afterEach(commonAfterEach);
 afterAll(commonAfterAll);
 
 describe("add", function () {
-  const newReminder = {
-    userId: 1,
-    reminderType: "Follow-up",
-    date: "2024-12-15",
-    description: "Follow up with TechCorp after interview.",
-  };
 
   test("works", async function () {
+    const newReminder = {
+      applicationId: testApplicationIds[0],
+      userId: 1,
+      reminderType: "Follow-up",
+      date: "2024-12-15",
+      description: "Follow up with TechCorp after interview.",
+    };
     const reminder = await Reminder.add(newReminder);
 
     // Normalize `date` in the returned reminder for comparison
@@ -87,7 +89,7 @@ describe("get", function () {
 
     expect(normalizedReminder).toEqual({
       id: testReminderIds[0],
-      userId: 1,
+      company: "TechCorp",
       reminderType: "Follow-up",
       date: "2024-12-07", // Normalized date format
       description: "Send a follow-up email to TechCorp.",
@@ -118,14 +120,14 @@ describe("findByUser", function () {
     expect(normalizedReminders).toEqual([
       {
         id: testReminderIds[0],
-        userId: 1,
+        company: "TechCorp",
         reminderType: "Follow-up",
         date: "2024-12-07",
         description: "Send a follow-up email to TechCorp.",
       },
       {
         id: testReminderIds[1],
-        userId: 1,
+        company: "DataSolutions",
         reminderType: "Interview",
         date: "2024-12-10",
         description: "Prepare for DataSolutions panel interview.",
@@ -143,7 +145,7 @@ describe("findByUser", function () {
 describe("update", function () {
   const updateData = {
     date: "2024-12-20",
-    reminderType: "Updated Type",
+    reminderType: "Interview",
     description: "Updated description",
   };
 
@@ -158,13 +160,13 @@ describe("update", function () {
 
     expect(normalizedReminder).toEqual({
       id: testReminderIds[0],
-      userId: 1,
+      applicationId: 1,
       ...updateData,
     });
 
     // Verify the update in the database
     const result = await db.query(
-      `SELECT id, user_id AS "userId", reminder_type AS "reminderType", date, description
+      `SELECT id, application_id AS "applicationId", reminder_type AS "reminderType", date, description
        FROM reminders
        WHERE id = $1`,
       [testReminderIds[0]]
@@ -178,7 +180,7 @@ describe("update", function () {
 
     expect(normalizedDbReminder).toEqual({
       id: testReminderIds[0],
-      userId: 1,
+      applicationId: 1,
       reminderType: updateData.reminderType,
       date: updateData.date,
       description: updateData.description,

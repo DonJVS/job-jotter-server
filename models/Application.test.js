@@ -71,7 +71,7 @@ describe("create", function () {
 
 describe("get", function () {
   test("works", async function () {
-    const application = await Application.get(testApplicationIds[0]);
+    const application = await Application.getWithDetails(testApplicationIds[0]);
 
     // Normalize the dateApplied field
     const normalizedApplication = {
@@ -87,12 +87,27 @@ describe("get", function () {
       status: "applied",
       dateApplied: "2024-11-01",
       notes: "Referred by a friend.",
+      interviews: [],
+      reminders: [
+        {
+          id: 1,
+          date: new Date("2024-12-07T05:00:00.000Z"),
+          reminderType: "Follow-up",
+          description: "Send a follow-up email to TechCorp.",
+        },
+        {
+          id: 2,
+          date: new Date("2024-12-10T05:00:00.000Z"),
+          reminderType: "Interview",
+          description: "Prepare for DataSolutions panel interview.",
+        },
+      ],
     });
   });
 
   test("not found if no such application", async function () {
     try {
-      await Application.get(0); // Invalid ID
+      await Application.getWithDetails(0); // Invalid ID
       fail("Expected NotFoundError not thrown");
     } catch (err) {
       expect(err).toBeInstanceOf(NotFoundError);

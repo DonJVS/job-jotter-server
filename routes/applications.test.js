@@ -112,6 +112,8 @@ describe("GET /applications/:id", function () {
         status: "applied",
         dateApplied: expect.any(String),
         notes: "Referred by a friend.",
+        interviews: expect.any(Array),
+        reminders: expect.any(Array),
       },
     });
   });

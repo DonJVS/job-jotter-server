@@ -78,13 +78,14 @@ async function commonBeforeAll() {
     // Insert reminders
     const reminders = await db.query(
       `
-      INSERT INTO reminders (user_id, reminder_type, date, description)
+      INSERT INTO reminders (user_id, application_id, reminder_type, date, description)
       VALUES 
-        (1, 'Follow-up', '2024-12-07', 'Send a follow-up email to TechCorp.'),
-        (1, 'Interview', '2024-12-10', 'Prepare for DataSolutions panel interview.'),
-        (2, 'Deadline', '2024-11-30', 'Submit coding challenge for InnovateInc.')
+        (1, $1, 'Follow-up', '2024-12-07', 'Send a follow-up email to TechCorp.'),
+        (1, $2, 'Interview', '2024-12-10', 'Prepare for DataSolutions panel interview.'),
+        (2, $3, 'Deadline', '2024-11-30', 'Submit coding challenge for InnovateInc.')
       RETURNING id
-      `
+      `,
+      [testApplicationIds[0], testApplicationIds[1], testApplicationIds[2]]
     );
     testReminderIds.push(...reminders.rows.map((r) => r.id));
 
@@ -95,15 +96,11 @@ async function commonBeforeAll() {
 }
 
 async function commonBeforeEach() {
-  console.time("commonBeforeEach");
   await db.query("BEGIN");
-  console.timeEnd("commonBeforeEach");
 }
 
 async function commonAfterEach() {
-  console.time("commonAfterEach");
   await db.query("ROLLBACK");
-  console.timeEnd("commonAfterEach");
 }
 
 async function commonAfterAll() {

@@ -44,7 +44,7 @@ async function commonBeforeAll() {
     );
     testApplicationIds.push(...applications.rows.map((row) => row.id));
 
-    const result = await db.query("SELECT * FROM applications ORDER BY id");
+    console.log("Applications inserted:", applications.rows);
 
 
     // Insert Interviews
@@ -64,13 +64,14 @@ async function commonBeforeAll() {
     // Insert Reminders
     const reminders = await db.query(
       `
-      INSERT INTO reminders (user_id, reminder_type, date, description)
+      INSERT INTO reminders (application_id, user_id, reminder_type, date, description)
       VALUES 
-        (1, 'Follow-up', '2024-12-07', 'Send a follow-up email to TechCorp.'),
-        (1, 'Interview', '2024-12-10', 'Prepare for DataSolutions panel interview.'),
-        (2, 'Deadline', '2024-11-30', 'Submit coding challenge for InnovateInc.')
+        ($1, 1, 'Follow-up', '2024-12-07', 'Send a follow-up email to TechCorp.'),
+        ($2, 1, 'Interview', '2024-12-10', 'Prepare for DataSolutions panel interview.'),
+        ($3, 2, 'Deadline', '2024-11-30', 'Submit coding challenge for InnovateInc.')
       RETURNING id
-      `
+      `,
+      [testApplicationIds[0], testApplicationIds[1], testApplicationIds[2]] 
     );
     testReminderIds.push(...reminders.rows.map((row) => row.id));
 

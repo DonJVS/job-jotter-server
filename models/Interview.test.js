@@ -108,7 +108,8 @@ describe("get", function () {
 
     expect(normalizedInterview).toEqual({
       id: testInterviewIds[0],
-      applicationId: testApplicationIds[2], // Match the correct application ID
+      applicationId: testApplicationIds[3], // Match the correct application ID
+      company: "InnovateInc",
       date: "2024-12-05", // Match the expected date format
       time: "10:00:00",
       location: "123 Main St, New York, NY",

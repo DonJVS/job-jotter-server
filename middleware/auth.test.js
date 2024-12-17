@@ -14,18 +14,24 @@ const { JWT_SECRET } = require("../config");
 const testJwt = jwt.sign({ username: "test", isAdmin: false }, JWT_SECRET);
 const badJwt = jwt.sign({ username: "test", isAdmin: false }, "wrong");
 
+beforeAll(() => {
+  jest.spyOn(console, "log").mockImplementation(() => {});
+});
+
+afterAll(() => {
+  console.log.mockRestore();
+});
+
 
 describe("authenticateJWT", function () {
-  test("works: via header", function () {
+  test("works: via header", async () => {
     expect.assertions(2);
-    //there are multiple ways to pass an authorization token, this is how you pass it in the header.
-    //this has been provided to show you another way to pass the token. you are only expected to read this code for this project.
     const req = { headers: { authorization: `Bearer ${testJwt}` } };
     const res = { locals: {} };
     const next = function (err) {
       expect(err).toBeFalsy();
     };
-    authenticateJWT(req, res, next);
+    await authenticateJWT(req, res, next); // Ensure async call is awaited
     expect(res.locals).toEqual({
       user: {
         iat: expect.any(Number),
@@ -34,26 +40,27 @@ describe("authenticateJWT", function () {
       },
     });
   });
+  
 
-  test("works: no header", function () {
+  test("works: no header", async () => {
     expect.assertions(2);
     const req = {};
     const res = { locals: {} };
     const next = function (err) {
       expect(err).toBeFalsy();
     };
-    authenticateJWT(req, res, next);
+    await authenticateJWT(req, res, next);
     expect(res.locals).toEqual({});
   });
 
-  test("works: invalid token", function () {
+  test("works: invalid token", async () => {
     expect.assertions(2);
     const req = { headers: { authorization: `Bearer ${badJwt}` } };
     const res = { locals: {} };
     const next = function (err) {
       expect(err).toBeFalsy();
     };
-    authenticateJWT(req, res, next);
+    await authenticateJWT(req, res, next);
     expect(res.locals).toEqual({});
   });
 });

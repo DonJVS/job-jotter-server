@@ -9,7 +9,8 @@ const {
   commonAfterEach, 
   commonAfterAll, 
   testUserTokens, 
-  testReminderIds 
+  testReminderIds, 
+  testApplicationIds
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -24,6 +25,7 @@ describe("POST /reminders", function () {
     const resp = await request(app)
       .post("/reminders")
       .send({
+        applicationId: testApplicationIds[0],
         reminderType: "Follow-up",
         date: "2024-12-15",
         description: "Send follow-up email to HR.",
@@ -41,6 +43,7 @@ describe("POST /reminders", function () {
     expect(normalizedResponse).toEqual({
       id: expect.any(Number),
       userId: expect.any(Number),
+      applicationId: testApplicationIds[0],
       reminderType: "Follow-up",
       date: "2024-12-15",
       description: "Send follow-up email to HR.",
@@ -87,10 +90,10 @@ describe("GET /reminders", function () {
   
     expect(normalizedReminders[0]).toEqual({
       id: testReminderIds[0],
-      userId: expect.any(Number),
       reminderType: "Follow-up",
       date: "2024-12-07",
       description: "Send a follow-up email to TechCorp.",
+      company: "TechCorp",
     });
   });
    
@@ -123,10 +126,10 @@ describe("PATCH /reminders/:id", function () {
   
     expect(normalizedResponse).toEqual({
       id: testReminderIds[0],
-      userId: expect.any(Number),
       reminderType: "Follow-up",
       date: "2024-12-07",
       description: "Updated description",
+      applicationId: 1,
     });
   });
   

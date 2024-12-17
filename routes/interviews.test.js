@@ -99,6 +99,7 @@ describe("GET /interviews", function () {
       {
         id: testInterviewIds[0],
         applicationId: testApplicationIds[0],
+        company: "TechCorp",
         date: "2024-12-05",
         time: "10:00",
         location: "123 Main St, New York, NY",
@@ -107,6 +108,7 @@ describe("GET /interviews", function () {
       {
         id: testInterviewIds[1],
         applicationId: testApplicationIds[1],
+        company: "DataSolutions",
         date: "2024-12-10",
         time: "14:00",
         location: "Virtual",
@@ -133,7 +135,7 @@ describe("GET /interviews/:id", function () {
     expect(resp.body).toEqual({
       interview: {
         id: testInterviewIds[0],
-        applicationId: testApplicationIds[0],
+        company: "TechCorp",
         date: "2024-12-05T05:00:00.000Z",
         time: "10:00:00",
         location: "123 Main St, New York, NY",

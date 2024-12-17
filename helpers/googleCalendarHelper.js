@@ -88,11 +88,13 @@ async function listEvents(auth) {
     console.log('No upcoming events found.');
     return;
   }
-  console.log('Upcoming 50 events:');
-  events.map((event, i) => {
-    const start = event.start.dateTime || event.start.date;
-    console.log(`${event.id} - ${start} - ${event.summary}`);
-  });
+  if (process.env.NODE_ENV !== "test") {
+    console.log("Upcoming 50 events:");
+    events.map((event, i) => {
+      const start = event.start.dateTime || event.start.date;
+      console.log(`${event.id} - ${start} - ${event.summary}`);
+    });
+  }
 
   return res.data.items || [];
 }
@@ -102,4 +104,5 @@ authorize().then(listEvents).catch(console.error);
 module.exports = {
   authorize,
   listEvents,
+  saveCredentials,
 };

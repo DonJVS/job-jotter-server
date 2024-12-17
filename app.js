@@ -14,6 +14,8 @@ const reminderRoutes = require("./routes/reminders");
 const oauthRouter = require("./routes/oauthRouter");
 const googleCalendarRoutes = require("./routes/googleCalendarRoutes");
 
+const healthRoutes = require("./routes/health");
+
 const { authenticateJWT } = require("./middleware/auth");
 
 const app = express();
@@ -58,6 +60,8 @@ app.use("/users", userRoutes);
 app.use("/applications", applicationRoutes);
 app.use("/interviews", interviewRoutes);
 app.use("/reminders", reminderRoutes);
+
+app.use("/health", healthRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to Job Jotter API!");
