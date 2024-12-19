@@ -22,7 +22,7 @@ const router = express.Router();
  * Returns the newly created application:
  * { application: { id, userId, company, jobTitle, status, dateApplied, notes } }
  *
- * Authorization required: logged-in user (or admin if creating for another user)
+ * Authorization required: logged-in user
  */
 router.post("/", ensureLoggedIn, validateSchema(applicationNewSchema), async function (req, res, next) {
   try {
@@ -40,7 +40,7 @@ router.post("/", ensureLoggedIn, validateSchema(applicationNewSchema), async fun
 /** GET /:username => { applications: [ { id, company, jobTitle, status, dateApplied, notes }, ... ] }
  *
  * Returns all applications for the specified user.
- * Authorization required: correct user or admin
+ * Authorization required: correct user
  */
 router.get("/", ensureLoggedIn, async function (req, res, next) {
   try {
@@ -60,7 +60,7 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
  * Returns details for a single application:
  * { application: { id, userId, company, jobTitle, status, dateApplied, notes } }
  *
- * Authorization required: admin or same user who created the application
+ * Authorization required: correct user
  */
 router.get("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
@@ -79,7 +79,7 @@ router.get("/:id", ensureLoggedIn, async function (req, res, next) {
  * Returns the updated application:
  * { application: { id, userId, company, jobTitle, status, dateApplied, notes } }
  *
- * Authorization required: admin or same user who created the application
+ * Authorization required: correct user
  */
 router.patch("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
@@ -100,7 +100,7 @@ router.patch("/:id", ensureLoggedIn, async function (req, res, next) {
 /** DELETE /:id => { deleted: id }
  *
  * Deletes an application.
- * Authorization required: admin or same user who created the application
+ * Authorization required: correct user
  */
 router.delete("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
@@ -115,7 +115,7 @@ router.delete("/:id", ensureLoggedIn, async function (req, res, next) {
  *
  * Returns all interviews for a specific application.
  *
- * Authorization required: admin or the user who owns the application
+ * Authorization required: correct user
  */
 router.get("/:id/interviews", ensureLoggedIn, async function (req, res, next) {
   try {
@@ -130,7 +130,7 @@ router.get("/:id/interviews", ensureLoggedIn, async function (req, res, next) {
  *
  * Returns all reminders for a specific application.
  *
- * Authorization required: admin or the user who owns the application
+ * Authorization required: correct user
  */
 router.get("/:id/reminders", ensureLoggedIn, async function (req, res, next) {
   try {

@@ -20,7 +20,7 @@ describe("config can come from env", function () {
   test("works with custom env vars", function () {
     // Set environment variables
     process.env.JWT_SECRET = "abc";
-    process.env.PORT = "5002";
+    process.env.PORT = "5000";
     process.env.DATABASE_URL = "other";
     process.env.NODE_ENV = "other";
 
@@ -30,7 +30,7 @@ describe("config can come from env", function () {
 
     // Assert environment variable overrides
     expect(config.JWT_SECRET).toEqual("abc");
-    expect(config.PORT).toEqual(5002);
+    expect(config.PORT).toEqual(5000);
     expect(config.getDatabaseUri()).toEqual("other");
     expect(config.BCRYPT_WORK_FACTOR).toEqual(12);
   });
@@ -44,7 +44,7 @@ describe("config can come from env", function () {
 
     // Assert default values
     expect(config.JWT_SECRET).toEqual("Secret_passwrd");
-    expect(config.PORT).toEqual(5002); // Default PORT as per your current config
+    expect(config.PORT).toEqual(5000); // Default PORT 
     expect(config.getDatabaseUri()).toMatch(/job_jotter/); // Default DB name
     expect(config.BCRYPT_WORK_FACTOR).toEqual(12); // Default bcrypt factor
 

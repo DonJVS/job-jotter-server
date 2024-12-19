@@ -175,9 +175,6 @@ describe("GET /users", function () {
   });
 
   test("fails: test next() handler", async function () {
-    // there's no normal failure event which will cause this route to fail ---
-    // thus making it hard to test that the error-handler works with it. This
-    // should cause an error, all right :)
     await db.query("DROP TABLE users CASCADE");
     const resp = await request(app)
         .get("/users")
@@ -422,13 +419,9 @@ describe("POST /users/:username/applications/:id", function () {
   });
 
   test("works for same user", async function () {
-    console.log("John Doe Token:", testUserTokens.john_doe);
-    console.log("Test Application ID for user:", testApplicationIds[1]);
     const resp = await request(app)
       .post(`/users/john_doe/applications/${testApplicationIds[1]}`)
       .set("authorization", `Bearer ${testUserTokens.john_doe}`);
-    console.log("Response Status Code:", resp.statusCode); // Debugging
-    console.log("Response Body:", resp.body); // Debugging
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({ applied: testApplicationIds[1] });
   });

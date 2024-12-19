@@ -19,7 +19,7 @@ const router = express.Router();
  * Returns the newly created reminder:
  * { reminder: { id, userId, reminderType, date, description } }
  *
- * Authorization required: logged-in user or admin
+ * Authorization required: correct user
  */
 router.post("/", ensureLoggedIn, async function (req, res, next) {
   try {
@@ -62,7 +62,7 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
  * Returns details for a single reminder:
  * { reminder: { id, userId, reminderType, date, description } }
  *
- * Authorization required: admin or same user who created the reminder
+ * Authorization required: correct user
  */
 router.get("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
@@ -83,7 +83,7 @@ router.get("/:id", ensureLoggedIn, async function (req, res, next) {
  * Returns the updated reminder:
  * { reminder: { id, userId, reminderType, date, description } }
  *
- * Authorization required: admin or same user who created the reminder
+ * Authorization required: correct user
  */
 router.patch("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
@@ -103,7 +103,7 @@ router.patch("/:id", ensureLoggedIn, async function (req, res, next) {
 /** DELETE /:id => { deleted: id }
  *
  * Deletes a reminder.
- * Authorization required: admin or same user who created the reminder
+ * Authorization required: correct user
  */
 router.delete("/:id", ensureLoggedIn, async function (req, res, next) {
   try {

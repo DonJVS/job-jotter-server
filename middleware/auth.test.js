@@ -9,7 +9,6 @@ const {
   ensureCorrectUserOrAdmin,
 } = require("./auth");
 
-
 const { JWT_SECRET } = require("../config");
 const testJwt = jwt.sign({ username: "test", isAdmin: false }, JWT_SECRET);
 const badJwt = jwt.sign({ username: "test", isAdmin: false }, "wrong");
@@ -21,7 +20,6 @@ beforeAll(() => {
 afterAll(() => {
   console.log.mockRestore();
 });
-
 
 describe("authenticateJWT", function () {
   test("works: via header", async () => {

@@ -7,7 +7,7 @@ require("colors");
 
 const JWT_SECRET = process.env.JWT_SECRET || "Secret_passwrd";
 
-const PORT = +process.env.PORT || 5002;
+const PORT = +process.env.PORT || 5000;
 
 // Google OAuth 2.0 configuration
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "your-client-id-here";

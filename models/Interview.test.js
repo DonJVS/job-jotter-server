@@ -113,7 +113,7 @@ describe("get", function () {
       date: "2024-12-05", // Match the expected date format
       time: "10:00:00",
       location: "123 Main St, New York, NY",
-      notes: "On-site technical interview.", // Ensure the note text matches the test data
+      notes: "On-site technical interview.",
     });
   });
 
@@ -131,7 +131,6 @@ describe("get", function () {
 /************************************** update */
 
 describe("update", function () {
-  let updateData;
   
   test("works", async function () {
     const updateData = {

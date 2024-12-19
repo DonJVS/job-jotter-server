@@ -19,7 +19,7 @@ const router = express.Router();
  * Returns the newly created interview:
  * { interview: { id, applicationId, date, time, location, notes } }
  *
- * Authorization required: logged-in user or admin
+ * Authorization required: correct user
  */
 router.post("/", ensureLoggedIn, async function (req, res, next) {
   try {
@@ -39,7 +39,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
 /** GET / => { interviews: [ { id, applicationId, date, time, location, notes }, ... ] }
  *
  * Returns all interviews for a single user.
- * Authorization required: logged in user or admin
+ * Authorization required: correct user
  */
 router.get("/", ensureLoggedIn, async function (req, res, next) {
   try {
@@ -56,7 +56,7 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
  * Returns details for a single interview:
  * { interview: { id, applicationId, date, time, location, notes } }
  *
- * Authorization required: admin or same user associated with the application
+ * Authorization required: correct user
  */
 router.get("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
@@ -76,7 +76,7 @@ router.get("/:id", ensureLoggedIn, async function (req, res, next) {
  * Returns the updated interview:
  * { interview: { id, applicationId, date, time, location, notes } }
  *
- * Authorization required: admin or same user associated with the application
+ * Authorization required: correct user
  */
 router.patch("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
@@ -96,7 +96,7 @@ router.patch("/:id", ensureLoggedIn, async function (req, res, next) {
 /** DELETE /:id => { deleted: id }
  *
  * Deletes an interview.
- * Authorization required: admin or same user associated with the application
+ * Authorization required: correct user
  */
 router.delete("/:id", ensureLoggedIn, async function (req, res, next) {
   try {

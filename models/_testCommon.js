@@ -14,7 +14,6 @@ async function commonBeforeAll() {
     // Clear all tables and reset identities
     await db.query("TRUNCATE reminders, interviews, applications, users RESTART IDENTITY CASCADE");
 
-
     // Insert Users
     const hashedPasswords = await Promise.all([
       bcrypt.hash("password1", BCRYPT_WORK_FACTOR),

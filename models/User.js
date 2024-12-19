@@ -69,7 +69,7 @@ class User {
 
   /** Find all users.
    *
-   * Returns [{ id, username, email, isAdmin }, ...]
+   * Returns [{ id, username, firstName, lastName, email, isAdmin }, ...]
    */
   static async findAll() {
     const result = await db.query(
@@ -87,7 +87,7 @@ class User {
 
   /** Get user by id.
    *
-   * Returns { id, username, email, isAdmin, applications }
+   * Returns { id, username, firstName, lastName, email, isAdmin, applications }
    *   where applications is [{ id, company, jobTitle, status }, ...]
    * Throws NotFoundError if user not found.
    */

@@ -45,11 +45,10 @@ class Interview {
 
     return interview;
   }
-  
 
     /** Find all interviews for a given user ID.
    *
-   * Returns [{ id, applicationId, date, time, location, notes }, ...]
+   * Returns [{ id, applicationId, date, time, location, notes, company }, ...]
    */
   static async findAll(userId) {
     const result = await db.query(
@@ -71,7 +70,7 @@ class Interview {
 
   /** Get all interviews for a specific application.
    *
-   * Returns [{ id, date, time, location, notes }, ...]
+   * Returns [{ id, applicationId, date, time, location, notes }, ...]
    */
   static async findByApplication(applicationId) {
     const result = await db.query(

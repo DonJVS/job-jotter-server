@@ -25,7 +25,7 @@ describe("POST /interviews", function () {
     const resp = await request(app)
       .post("/interviews")
       .send({
-        applicationId: testApplicationIds[0], // Ensure this ID exists in your test setup
+        applicationId: testApplicationIds[0],
         date: "2024-12-10",
         time: "14:00", // Ensure correct input
         location: "Virtual",
@@ -38,7 +38,7 @@ describe("POST /interviews", function () {
     // Normalize `date` and `time` fields for comparison
     const normalizedResponse = {
       ...resp.body.interview,
-      date: resp.body.interview.date.split("T")[0], // Keep only the date part
+      date: resp.body.interview.date.split("T")[0],
       time: resp.body.interview.time.split(":").slice(0, 2).join(":"), // Normalize to HH:MM format
     };
   
@@ -91,7 +91,7 @@ describe("GET /interviews", function () {
     // Normalize received interviews for comparison
     const normalizedInterviews = resp.body.interviews.map((interview) => ({
       ...interview,
-      date: interview.date.split("T")[0], // Extract only the date
+      date: interview.date.split("T")[0],
       time: interview.time.split(":").slice(0, 2).join(":"), // Format to HH:MM
     }));
   

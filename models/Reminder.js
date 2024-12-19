@@ -32,7 +32,7 @@ class Reminder {
 
     /** Find all reminders for a given user.
    *
-   * Returns [{ id, userId, reminderType, date, description }, ...]
+   * Returns [{ id,reminderType, date, description, company }, ...]
    */
   static async findAll(userId) {
     const result = await db.query(
@@ -52,7 +52,7 @@ class Reminder {
 
   /** Get a reminder by ID.
    *
-   * Returns { id, userId, reminderType, date, description }
+   * Returns { id, reminderType, date, description, company }
    *
    * Throws NotFoundError if not found.
    */
@@ -97,7 +97,7 @@ static async findByApplication(applicationId) {
 
   /** Get all reminders for a user.
    *
-   * Returns [{ id, reminder_type, date, description }, ...]
+   * Returns [{ id, reminder_type, date, description, company }, ...]
    */
   static async findByUser(userId) {
     const result = await db.query(
@@ -119,7 +119,7 @@ static async findByApplication(applicationId) {
    *
    * Data can include: { reminderType, date, description }
    *
-   * Returns { id, userId, reminderType, date, description }
+   * Returns { id, applicationId, reminderType, date, description }
    *
    * Throws NotFoundError if the reminder does not exist.
    */

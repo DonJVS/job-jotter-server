@@ -33,8 +33,8 @@ const corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true, // Allow credentials (e.g., cookies, Authorization headers)
-  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"], // Allowed HTTP methods
+  credentials: true,
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Authorization", "Content-Type", "Accept"], // Allow required headers
 };
 

@@ -57,7 +57,6 @@ class Application {
       }));
     }
     
-
   /** Get an application by id.
    *
    * Returns { id, userId, company, jobTitle, status, dateApplied, notes }
