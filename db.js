@@ -3,7 +3,6 @@
 const { Pool } = require("pg");
 const { getDatabaseUri } = require("./config");
 
-// Use a connection pool instead of a single client
 const db = new Pool({
   connectionString: getDatabaseUri(),
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,

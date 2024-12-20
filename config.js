@@ -17,7 +17,6 @@ const GOOGLE_REDIRECT_URI =
     ? process.env.GOOGLE_REDIRECT_URI || "https://yourdomain.com/auth/google/callback"
     : "http://localhost:5001/auth/google/callback";
 
-// Use development, test, or production database based on NODE_ENV
 function getDatabaseUri() {
   const uri =
     process.env.NODE_ENV === "test"
@@ -27,18 +26,19 @@ function getDatabaseUri() {
   return uri;
 }
 
-// Speed up bcrypt during tests; use higher work factor for production
+
 const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
 
-console.log("Job Jotter Config:".green);
-console.log("JWT_SECRET:".yellow, JWT_SECRET);
-console.log("PORT:".yellow, PORT.toString());
-console.log("BCRYPT_WORK_FACTOR:".yellow, BCRYPT_WORK_FACTOR);
-console.log("Database:".yellow, getDatabaseUri());
-console.log("GOOGLE_CLIENT_ID:".yellow, GOOGLE_CLIENT_ID);
-console.log("GOOGLE_REDIRECT_URI:".yellow, GOOGLE_REDIRECT_URI);
-console.log("---");
-
+if (process.env.NODE_ENV !== "production") {
+  console.log("Job Jotter Config:".green);
+  console.log("JWT_SECRET:".yellow, JWT_SECRET);
+  console.log("PORT:".yellow, PORT.toString());
+  console.log("BCRYPT_WORK_FACTOR:".yellow, BCRYPT_WORK_FACTOR);
+  console.log("Database:".yellow, getDatabaseUri());
+  console.log("GOOGLE_CLIENT_ID:".yellow, GOOGLE_CLIENT_ID);
+  console.log("GOOGLE_REDIRECT_URI:".yellow, GOOGLE_REDIRECT_URI);
+  console.log("---");
+}
 module.exports = {
   JWT_SECRET,
   PORT,

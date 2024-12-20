@@ -1,0 +1,17 @@
+# Dependency directory
+node_modules/
+
+# Environment variables
+.env
+
+#Google Credentials
+credentials.json
+token.json
+#Local scripts
+Local_scripts/
+
+# Cache files
+.npm/
+.DS_Store
+yarn.lock
+package-lock.json
