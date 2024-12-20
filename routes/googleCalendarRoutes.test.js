@@ -1,6 +1,6 @@
 const request = require("supertest");
 const express = require("express");
-const googleCalendarRoutes = require("../routes/googleCalendarRoutes");
+const googleCalendarRoutes = require("./googleCalendarRoutes");
 const { authorize, listEvents } = require("../helpers/googleCalendarHelper");
 const { google } = require("googleapis");
 
