@@ -3,7 +3,7 @@
 /** Convenience middleware to handle common auth cases in routes. */
 
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../config");
+const { SECRET_KEY } = require("../config");
 const { UnauthorizedError } = require("../expressError");
 
 /** Middleware: Authenticate user.
@@ -23,7 +23,7 @@ function authenticateJWT(req, res, next) {
       const token = authHeader.replace(/^[Bb]earer\s/, "").replace(/"/g, "").trim();
 
       // Verify the token and set the payload in res.locals.user
-      res.locals.user = jwt.verify(token, JWT_SECRET);
+      res.locals.user = jwt.verify(token, SECRET_KEY);
     } else {
       console.warn("authenticateJWT: Missing Authorization Header.");
     }

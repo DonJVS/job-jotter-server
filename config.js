@@ -5,7 +5,7 @@
 require("dotenv").config();
 require("colors");
 
-const JWT_SECRET = process.env.JWT_SECRET || "Secret_passwrd";
+const SECRET_KEY = process.env.SECRET_KEY || "Secret_passwrd";
 
 const PORT = +process.env.PORT || 5000;
 
@@ -31,7 +31,7 @@ const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
 
 if (process.env.NODE_ENV !== "production") {
   console.log("Job Jotter Config:".green);
-  console.log("JWT_SECRET:".yellow, JWT_SECRET);
+  console.log("SECRET_KEY:".yellow, SECRET_KEY);
   console.log("PORT:".yellow, PORT.toString());
   console.log("BCRYPT_WORK_FACTOR:".yellow, BCRYPT_WORK_FACTOR);
   console.log("Database:".yellow, getDatabaseUri());
@@ -40,7 +40,7 @@ if (process.env.NODE_ENV !== "production") {
   console.log("---");
 }
 module.exports = {
-  JWT_SECRET,
+  SECRET_KEY,
   PORT,
   BCRYPT_WORK_FACTOR,
   getDatabaseUri,

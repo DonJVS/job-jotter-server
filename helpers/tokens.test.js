@@ -1,11 +1,11 @@
 const jwt = require("jsonwebtoken");
 const { createToken } = require("./tokens");
-const { JWT_SECRET } = require("../config");
+const { SECRET_KEY } = require("../config");
 
 describe("createToken", function () {
   test("works: not admin", function () {
     const token = createToken({ username: "test", isAdmin: false });
-    const payload = jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, SECRET_KEY);
     expect(payload).toEqual({
       iat: expect.any(Number),
       username: "test",
@@ -15,7 +15,7 @@ describe("createToken", function () {
 
   test("works: admin", function () {
     const token = createToken({ username: "test", isAdmin: true });
-    const payload = jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, SECRET_KEY);
     expect(payload).toEqual({
       iat: expect.any(Number),
       username: "test",
@@ -25,7 +25,7 @@ describe("createToken", function () {
 
   test("works: default no admin", function () {
     const token = createToken({ username: "test" }); // No isAdmin provided
-    const payload = jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, SECRET_KEY);
     expect(payload).toEqual({
       id: undefined,  // Default behavior if no `id` is provided
       iat: expect.any(Number),

@@ -7,7 +7,7 @@
  */
 
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../config");
+const { SECRET_KEY } = require("../config");
 
 /**
  * Creates a JSON Web Token for a given user.
@@ -18,7 +18,7 @@ const { JWT_SECRET } = require("../config");
  * @param {boolean} [user.isAdmin=false] - Indicates if the user has admin privileges.
  * 
  * @throws {Error} Throws an error if the user object is missing required properties.
- * @throws {Error} Throws an error if `JWT_SECRET` is not defined.
+ * @throws {Error} Throws an error if `SECRET_KEY` is not defined.
  * 
  * @returns {string} A signed JWT containing the user payload.
  */
@@ -35,10 +35,10 @@ function createToken(user) {
     isAdmin: user.isAdmin || false, // Default to false if not provided
   };
 
-  if (!JWT_SECRET) {
-    throw new Error ("JWT_SECRET is not defined");
+  if (!SECRET_KEY) {
+    throw new Error ("SECRET_KEY is not defined");
   }
-  return jwt.sign(payload, JWT_SECRET);
+  return jwt.sign(payload, SECRET_KEY);
 }
 
 module.exports = { createToken };

@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const db = require("../db.js");
 const { BCRYPT_WORK_FACTOR } = require("../config");
 const { createToken } = require("../helpers/tokens");
-const { JWT_SECRET } = require("../config");
+const { SECRET_KEY } = require("../config");
 
 const testUserTokens = {};
 const testApplicationIds = [];

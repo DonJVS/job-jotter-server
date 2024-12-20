@@ -10,7 +10,7 @@ describe("config can come from env", function () {
 
   afterEach(() => {
     // Cleanup environment variables
-    delete process.env.JWT_SECRET;
+    delete process.env.SECRET_KEY;
     delete process.env.PORT;
     delete process.env.BCRYPT_WORK_FACTOR;
     delete process.env.DATABASE_URL;
@@ -19,7 +19,7 @@ describe("config can come from env", function () {
 
   test("works with custom env vars", function () {
     // Set environment variables
-    process.env.JWT_SECRET = "abc";
+    process.env.SECRET_KEY = "abc";
     process.env.PORT = "5000";
     process.env.DATABASE_URL = "other";
     process.env.NODE_ENV = "other";
@@ -29,7 +29,7 @@ describe("config can come from env", function () {
     const config = require("./config");
 
     // Assert environment variable overrides
-    expect(config.JWT_SECRET).toEqual("abc");
+    expect(config.SECRET_KEY).toEqual("abc");
     expect(config.PORT).toEqual(5000);
     expect(config.getDatabaseUri()).toEqual("other");
     expect(config.BCRYPT_WORK_FACTOR).toEqual(12);
@@ -43,7 +43,7 @@ describe("config can come from env", function () {
     config = require("./config");
 
     // Assert default values
-    expect(config.JWT_SECRET).toEqual("Secret_passwrd");
+    expect(config.SECRET_KEY).toEqual("Secret_passwrd");
     expect(config.PORT).toEqual(5000); // Default PORT 
     expect(config.getDatabaseUri()).toMatch(/job_jotter/); // Default DB name
     expect(config.BCRYPT_WORK_FACTOR).toEqual(12); // Default bcrypt factor
