@@ -23,6 +23,7 @@ const app = express();
 //CORS setup
 const allowedOrigins = [
   "http://localhost:3000", // Local frontend during development
+  "https://jobjotter.onrender.com", // Production URL
 ];
 
 const corsOptions = {
