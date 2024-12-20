@@ -25,6 +25,7 @@ const { SECRET_KEY } = require("../config");
 function createToken(user) {
   // Validate required user properties
   if (!user.username) {
+    console.error("createToken: Missing username in user object", user);
     throw new Error("createToken passed user without required properties");
   }
 
@@ -36,8 +37,10 @@ function createToken(user) {
   };
 
   if (!SECRET_KEY) {
+    console.error("createToken: SECRET_KEY is not defined")
     throw new Error ("SECRET_KEY is not defined");
   }
+  console.debug("createToken: Payload to sign", payload);
   return jwt.sign(payload, SECRET_KEY);
 }
 

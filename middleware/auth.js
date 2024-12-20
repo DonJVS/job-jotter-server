@@ -15,23 +15,22 @@ const { UnauthorizedError } = require("../expressError");
  */
 function authenticateJWT(req, res, next) {
   try {
-    // Get the Authorization header
     const authHeader = req.headers && req.headers.authorization;
+    console.debug("authenticateJWT: Authorization header received:", authHeader);
 
     if (authHeader) {
-      // Extract the token by removing "Bearer " prefix
       const token = authHeader.replace(/^[Bb]earer\s/, "").replace(/"/g, "").trim();
+      console.debug("authenticateJWT: Extracted token:", token);
 
-      // Verify the token and set the payload in res.locals.user
       res.locals.user = jwt.verify(token, SECRET_KEY);
+      console.debug("authenticateJWT: Verified payload:", res.locals.user);
     } else {
       console.warn("authenticateJWT: Missing Authorization Header.");
     }
-
-    return next(); // Proceed to the next middleware or route
+    return next();
   } catch (err) {
-    console.warn("authenticateJWT: Invalid token or verification failed.");
-    return next(); // Proceed without user authentication (non-blocking)
+    console.warn("authenticateJWT: Token verification failed:", err.message);
+    return next();
   }
 }
 
