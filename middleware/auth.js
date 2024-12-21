@@ -19,7 +19,7 @@ function authenticateJWT(req, res, next) {
     console.debug("authenticateJWT: Authorization header received:", authHeader);
 
     if (authHeader) {
-      const token = authHeader.replace(/^[Bb]earer\s/, "").replace(/"/g, "").trim();
+      const token = authHeader.replace(/^[Bb]earer /, "").trim();
       console.debug("authenticateJWT: Extracted token:", token);
 
       res.locals.user = jwt.verify(token, SECRET_KEY);

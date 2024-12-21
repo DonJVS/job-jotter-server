@@ -1,5 +1,6 @@
 "use strict";
 
+const path = require("path"); // Required for serving static files
 const cors = require("cors");
 const express = require("express");
 const morgan = require("morgan");
@@ -55,9 +56,9 @@ app.use(authenticateJWT);
 
 // Routes
 app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
 app.use("/auth/google", oauthRouter);
 app.use("/google-calendar", googleCalendarRoutes);
-app.use("/users", userRoutes);
 app.use("/applications", applicationRoutes);
 app.use("/interviews", interviewRoutes);
 app.use("/reminders", reminderRoutes);
