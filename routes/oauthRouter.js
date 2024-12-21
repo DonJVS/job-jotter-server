@@ -16,7 +16,10 @@ const oauth2Client = new google.auth.OAuth2(
 
 // Route to initiate OAuth flow
 router.get("/auth/google", (req, res) => {
-  const scopes = ["https://www.googleapis.com/auth/calendar.readonly"];
+  const scopes = [
+    "https://www.googleapis.com/auth/calendar.readonly",
+    "https://www.googleapis.com/auth/calendar"
+  ];
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: scopes,
