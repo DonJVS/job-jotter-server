@@ -63,6 +63,10 @@ async function authorize() {
       process.env.GOOGLE_REDIRECT_URI
     );
 
+    oauth2Client.setCredentials({
+      refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+    });
+
     return oauth2Client;
   }
 
