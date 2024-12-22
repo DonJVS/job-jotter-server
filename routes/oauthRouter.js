@@ -38,6 +38,8 @@ router.get("/auth/google/callback", async (req, res) => {
       message: "Authentication successful!",
       tokens,
     });
+
+    res.redirect("https://jobjotter.onrender.com/dashboard");
   } catch (error) {
     console.error("Error during Google OAuth callback:", error);
     res.status(500).send("Authentication failed");
