@@ -57,7 +57,7 @@ app.use(authenticateJWT);
 // Routes
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
-app.use("/auth/google", oauthRouter);
+app.use("/", oauthRouter);
 app.use("/google-calendar", googleCalendarRoutes);
 app.use("/applications", applicationRoutes);
 app.use("/interviews", interviewRoutes);
