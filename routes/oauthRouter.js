@@ -34,10 +34,6 @@ router.get("/auth/google/callback", async (req, res) => {
   try {
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
-    res.json({
-      message: "Authentication successful!",
-      tokens,
-    });
 
     res.redirect("https://jobjotter.onrender.com/dashboard");
   } catch (error) {
