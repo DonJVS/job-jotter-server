@@ -53,7 +53,7 @@ async function saveCredentials(client) {
  * Load or request or authorization to call APIs.
  *
  */
-async function authorize() {
+async function authorize(userTokens) {
   if (process.env.NODE_ENV === "production") {
     const { google } = require('googleapis');
 
@@ -63,9 +63,11 @@ async function authorize() {
       process.env.GOOGLE_REDIRECT_URI
     );
 
-    oauth2Client.setCredentials({
-      refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-    });
+    if (!userTokens) {
+      throw new Error("No tokens provided by client in production.");
+    }
+
+    oauth2Client.setCredentials(userTokens);
 
     return oauth2Client;
   }
