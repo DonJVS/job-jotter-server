@@ -35,7 +35,7 @@ router.get("/auth/google/callback", async (req, res) => {
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
 
-    res.redirect("https://jobjotter.onrender.com/dashboard");
+    res.redirect("https://jobjotter.onrender.com");
   } catch (error) {
     console.error("Error during Google OAuth callback:", error);
     res.status(500).send("Authentication failed");
