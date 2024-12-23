@@ -21,10 +21,14 @@ router.get("/auth/google", (req, res) => {
     "https://www.googleapis.com/auth/calendar.readonly",
     "https://www.googleapis.com/auth/calendar"
   ];
+
+  const userJwt = res.locals.user ? res.locals.user._rawToken : null; 
+
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: "offline",
     prompt:"consent",
     scope: scopes,
+    state: userJwt,
   });
   res.redirect(authUrl);
 });
@@ -32,12 +36,14 @@ router.get("/auth/google", (req, res) => {
 // OAuth callback route
 router.get("/auth/google/callback", async (req, res) => {
   const code = req.query.code;
+  const state = req.query.state;
   try {
+    // Decode the user from state
+    const userPayload = jwt.verify(state, SECRET_KEY);
     //Exchange code for tokens
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
 
-    const currentUserId = res.locals.user.id;
     // Persist tokens in the DB
     await db.query(
       `UPDATE users
@@ -50,7 +56,7 @@ router.get("/auth/google/callback", async (req, res) => {
         tokens.access_token,
         tokens.refresh_token,
         tokens.expiry_date, 
-        currentUserId
+        userPayload.id
       ]
     );
     // Redirect the user back to the client
