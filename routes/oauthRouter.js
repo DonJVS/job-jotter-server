@@ -29,10 +29,19 @@ router.get("/auth/google", (req, res) => {
 
   if (encodedToken) {
     try {
-      const rawToken = decodeURIComponent(encodedToken);
+      const rawString = decodeURIComponent(encodedToken); 
+      // rawString === '{"token":"eyJ..."}'
 
-      const userPayload = jwt.verify(rawToken, SECRET_KEY);
-      console.log("User ID:", userPayload.id);
+      let parsed;
+      try {
+        parsed = JSON.parse(rawString); // => { token: "eyJ..." }
+      } catch (err) {
+        console.error("Invalid JSON in query param:", err);
+        return res.status(400).send("Bad token");
+      }
+
+      const userPayload = jwt.verify(parsed.token, SECRET_KEY);
+      console.log("User ID:", userPayload.id)
 
       userJwt = userPayload.id;
     } catch (err) {
@@ -42,7 +51,7 @@ router.get("/auth/google", (req, res) => {
   } else {
     console.warn("No token provided in query param");
     return res.status(401).send("Not logged in");
-  }
+    }
 
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: "offline",
