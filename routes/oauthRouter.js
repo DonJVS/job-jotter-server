@@ -37,6 +37,7 @@ router.get("/auth/google", (req, res) => {
 
 // OAuth callback route
 router.get("/auth/google/callback", async (req, res) => {
+  console.log("STATE PARAM:", req.query.state);
   const code = req.query.code;
   const state = req.query.state;
   try {
