@@ -24,7 +24,24 @@ router.get("/auth/google", (req, res) => {
     "https://www.googleapis.com/auth/calendar"
   ];
 
-  const userJwt = res.locals.user ? res.locals.user._rawToken : null; 
+  const encodedToken = req.query.token;
+  let userJwt = null;
+
+  if (encodedToken) {
+    try {
+      const rawToken = decodeURIComponent(encodedToken);
+
+      const userPayload = jwt.verify(rawToken, SECRET_KEY);
+
+      userJwt = userPayload;
+    } catch (err) {
+      console.error("Invalid or missing token in query param:", err);
+      return res.status(400).send("Invalid token");
+    }0
+  } else {
+    console.warn("No token provided in query param");
+    return res.status(401).send("Not logged in");
+  }
 
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: "offline",
