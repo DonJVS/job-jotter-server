@@ -18,19 +18,16 @@ const userRegisterSchema = require("../schemas/userRegister.json");
  */
 router.post("/token", validateSchema(userAuthSchema), async function (req, res, next) {
   try {
-    console.log("Reached POST /auth/token with body:", req.body);
     const { username, password } = req.body;
     const user = await User.authenticate(username, password);
-    console.log("User from authenticate:", user);
+    
     if (!user) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
 
     const token = createToken(user);
-    console.log("Token about to send:", token);
     return res.json({ token });
   } catch (err) {
-    console.error("Error during login:", err.message);
     return next(err);
   }
 });

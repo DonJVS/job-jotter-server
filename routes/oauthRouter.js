@@ -40,8 +40,7 @@ router.get("/auth/google", (req, res) => {
         return res.status(400).send("Bad token");
       }
 
-      const userPayload = jwt.verify(parsed.token, SECRET_KEY);
-      console.log("User ID:", userPayload.id)
+      jwt.verify(parsed.token, SECRET_KEY);
 
       userJwt = parsed.token;
     } catch (err) {
@@ -64,7 +63,6 @@ router.get("/auth/google", (req, res) => {
 
 // OAuth callback route
 router.get("/auth/google/callback", async (req, res) => {
-  console.log("STATE PARAM:", req.query.state);
   const code = req.query.code;
   const state = req.query.state;
   try {
