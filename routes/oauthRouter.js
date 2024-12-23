@@ -1,5 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const { SECRET_KEY } = require("../config");
 const { google } = require("googleapis");
 const db = require("../db");
 const {
