@@ -3,6 +3,7 @@ const path = require('path');
 const process = require('process');
 const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
+const db = require("../db");
 
 // If modifying these scopes, delete token.json.
 const SCOPES = [
@@ -53,9 +54,22 @@ async function saveCredentials(client) {
  * Load or request or authorization to call APIs.
  *
  */
-async function authorize(userTokens) {
+async function authorize(userId) {
   if (process.env.NODE_ENV === "production") {
-    const { google } = require('googleapis');
+    // Fetch tokens from DB
+    const userTokensRes = await db.query(
+      `SELECT google_access_token, 
+              google_refresh_token, 
+              google_token_expiry
+       FROM users
+       WHERE id = $1`,
+      [userId]
+    );
+
+    const userTokens = userTokensRes.rows[0];
+    if (!userTokens || !userTokens.google_access_token) {
+      throw new Error("No stored Google tokens for this user.");
+    }
 
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
@@ -63,11 +77,35 @@ async function authorize(userTokens) {
       process.env.GOOGLE_REDIRECT_URI
     );
 
-    if (!userTokens) {
-      throw new Error("No tokens provided by client in production.");
-    }
+    oauth2Client.setCredentials({
+      access_token: userTokens.google_access_token,
+      refresh_token: userTokens.google_refresh_token,
+      expiry_date: userTokens.google_token_expiry
+    });
 
-    oauth2Client.setCredentials(userTokens);
+    // Check if access token expired
+    if (Date.now() >= userTokens.google_token_expiry) {
+      // Refresh the token
+      const { credentials } = await oauth2Client.refreshAccessToken();
+      // Merge the new refresh token only if present
+      credentials.refresh_token = credentials.refresh_token || userTokens.google_refresh_token;
+
+      await db.query(
+        `UPDATE users
+         SET google_access_token = $1,
+             google_refresh_token = $2,
+             google_token_expiry = $3
+         WHERE id = $4`,
+        [
+          credentials.access_token,
+          credentials.refresh_token,
+          credentials.expiry_date,
+          userId
+        ]
+      );
+
+      oauth2Client.setCredentials(credentials);
+    }
 
     return oauth2Client;
   }

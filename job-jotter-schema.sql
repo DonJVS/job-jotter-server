@@ -16,7 +16,10 @@ CREATE TABLE users (
     first_name VARCHAR(50),
     last_name VARCHAR(50),  
     is_admin BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    google_access_token TEXT,
+    google_refresh_token TEXT,
+    google_token_expiry BIGINT
 );
 
 -- Applications Table
