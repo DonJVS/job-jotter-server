@@ -43,7 +43,7 @@ router.get("/auth/google", (req, res) => {
       const userPayload = jwt.verify(parsed.token, SECRET_KEY);
       console.log("User ID:", userPayload.id)
 
-      userJwt = userPayload.id;
+      userJwt = parsed.token;
     } catch (err) {
       console.error("Invalid or missing token in query param:", err);
       return res.status(400).send("Invalid token");
