@@ -37,7 +37,7 @@ router.get("/auth/google/callback", async (req, res) => {
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
 
-    const currentUserId = req.user.id;
+    const currentUserId = res.locals.user.id;
     // Persist tokens in the DB
     await db.query(
       `UPDATE users

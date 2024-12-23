@@ -9,7 +9,7 @@ const router = express.Router();
 // GET /google-calendar/events - Fetch upcoming events
 router.get("/events", ensureLoggedIn, async (req, res) => {
   try {
-    const currentUserId = req.user.id;
+    const currentUserId = res.locals.user.id;
     const auth = await authorize(currentUserId);
     const events = await listEvents(auth);
 
@@ -28,7 +28,7 @@ router.get("/events", ensureLoggedIn, async (req, res) => {
 router.post("/events", ensureLoggedIn, async (req, res) => {
   try {
     const { start, end, summary, location, description } = req.body;
-    const currentUserId = req.user.id;
+    const currentUserId = res.locals.user.id;
     const auth = await authorize(currentUserId);
     const calendar = google.calendar({ version: "v3", auth });
 
@@ -68,7 +68,7 @@ router.patch("/events/:eventId", ensureLoggedIn, async (req, res) => {
   }
 
   try {
-    const currentUserId = req.user.id;
+    const currentUserId = res.locals.user.id;
     const auth = await authorize(currentUserId); // Authorize user
     const calendar = google.calendar({ version: "v3", auth });
 
@@ -108,7 +108,7 @@ router.delete("/events/:eventId", async (req, res) => {
   }
 
   try {
-    const currentUserId = req.user.id;
+    const currentUserId = res.locals.user.id;
     const auth = await authorize(currentUserId);
     const calendar = google.calendar({ version: "v3", auth });
 
