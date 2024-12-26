@@ -40,7 +40,6 @@ function createToken(user) {
     console.error("createToken: SECRET_KEY is not defined")
     throw new Error ("SECRET_KEY is not defined");
   }
-  console.debug("createToken: Payload to sign", payload);
   return jwt.sign(payload, SECRET_KEY);
 }
 

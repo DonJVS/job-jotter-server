@@ -43,7 +43,6 @@ async function commonBeforeAll() {
     );
     testApplicationIds.push(...applications.rows.map((row) => row.id));
 
-    console.log("Applications inserted:", applications.rows);
 
 
     // Insert Interviews

@@ -100,7 +100,7 @@ router.patch("/events/:eventId", ensureLoggedIn, async (req, res) => {
 
 
 // Delete an event
-router.delete("/events/:eventId", async (req, res) => {
+router.delete("/events/:eventId", ensureLoggedIn, async (req, res) => {
   const { eventId } = req.params;
 
   if (!eventId) {

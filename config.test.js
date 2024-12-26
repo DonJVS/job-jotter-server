@@ -38,6 +38,7 @@ describe("config can come from env", function () {
   test("works with defaults", function () {
     // Temporarily mock DATABASE_URL
     process.env.DATABASE_URL = "postgresql://user:password@localhost:5432/job_jotter";
+    process.env.SECRET_KEY = "Secret_passwrd";
 
     // Reload the config module to test defaults
     config = require("./config");
@@ -50,6 +51,7 @@ describe("config can come from env", function () {
 
     // Clean up the mock
     delete process.env.DATABASE_URL;
+    delete process.env.SECRET_KEY;
   });
 
   test("works with NODE_ENV=test", function () {

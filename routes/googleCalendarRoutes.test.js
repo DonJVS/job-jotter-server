@@ -15,8 +15,12 @@ jest.mock("googleapis", () => ({
   },
 }));
 
+const mockUser = { id: "test-user-id" };
 jest.mock("../middleware/auth", () => ({
-  ensureLoggedIn: (req, res, next) => next(),
+  ensureLoggedIn: (req, res, next) => {
+    res.locals.user = mockUser;
+    next();
+  },
 }));
 
 const app = express();
@@ -32,10 +36,10 @@ describe("Google Calendar Routes", () => {
 
     mockCalendar = {
       events: {
-        list: jest.fn(),
-        insert: jest.fn(),
-        patch: jest.fn(),
-        delete: jest.fn(),
+        list: jest.fn().mockResolvedValue({ data: { items: [{ id: "event123", summary: "Test Event" }] } }),
+        insert: jest.fn().mockResolvedValue({ data: { id: "event123", summary: "Created Event" } }),
+        patch: jest.fn().mockResolvedValue({ data: { id: "event123", summary: "Updated Event" } }),
+        delete: jest.fn().mockResolvedValue({}),
       },
     };
     google.calendar.mockReturnValue(mockCalendar);
@@ -47,33 +51,34 @@ describe("Google Calendar Routes", () => {
 
   describe("GET /google-calendar/events", () => {
     it("should return events when available", async () => {
-      const fakeEvents = [{ id: "1", summary: "Test Event" }];
+      const fakeEvents = [{ id: "event123", summary: "Test Event" }];
       listEvents.mockResolvedValue(fakeEvents);
-
+  
       const res = await request(app).get("/google-calendar/events");
-
+  
       expect(res.statusCode).toBe(200);
       expect(res.body).toEqual(fakeEvents);
     });
-
+  
     it("should return a message when no events are found", async () => {
       listEvents.mockResolvedValue([]);
-
+  
       const res = await request(app).get("/google-calendar/events");
-
+  
       expect(res.statusCode).toBe(200);
       expect(res.body).toEqual({ message: "No upcoming events found." });
     });
-
+  
     it("should return 500 on error", async () => {
       listEvents.mockRejectedValue(new Error("Failed"));
-
+  
       const res = await request(app).get("/google-calendar/events");
-
+  
       expect(res.statusCode).toBe(500);
       expect(res.body).toEqual({ error: "Failed to fetch events." });
     });
   });
+  
 
   describe("POST /google-calendar/events", () => {
     it("should create an event and return it", async () => {
@@ -152,7 +157,7 @@ describe("Google Calendar Routes", () => {
 
   describe("DELETE /google-calendar/events/:eventId", () => {
     it("should delete an event successfully", async () => {
-      mockCalendar.events.delete.mockResolvedValue();
+      mockCalendar.events.delete.mockResolvedValue({});
 
       const res = await request(app).delete("/google-calendar/events/event123");
 
