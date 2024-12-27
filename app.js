@@ -55,13 +55,13 @@ app.use(morgan("tiny"));
 app.use(authenticateJWT);
 
 // Routes
-app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
-app.use("/", oauthRouter);
-app.use("/google-calendar", googleCalendarRoutes);
-app.use("/applications", applicationRoutes);
-app.use("/interviews", interviewRoutes);
-app.use("/reminders", reminderRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/", oauthRouter);
+app.use("/api/google-calendar", googleCalendarRoutes);
+app.use("/api/applications", applicationRoutes);
+app.use("/api/interviews", interviewRoutes);
+app.use("/api/reminders", reminderRoutes);
 
 app.use("/health", healthRoutes);
 
