@@ -4,16 +4,16 @@ const request = require("supertest");
 const db = require("../db.js");
 const app = require("../app");
 const {
-  commonBeforeAll,
+  commonBeforeAllRoutes,
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  testUserTokens,
   testInterviewIds,
   testApplicationIds,
-} = require("./_testCommon");
+  testUserTokens,
+} = require("../test/common/routes/_testCommon");
 
-beforeAll(commonBeforeAll);
+beforeAll(commonBeforeAllRoutes);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);

@@ -5,15 +5,15 @@ const db = require("../db.js");
 const app = require("../app");
 
 const {
-  commonBeforeAll,
+  commonBeforeAllRoutes,
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
   testApplicationIds,
   testUserTokens,
-} = require("./_testCommon");
+} = require("../test/common/routes/_testCommon");
 
-beforeAll(commonBeforeAll);
+beforeAll(commonBeforeAllRoutes);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);

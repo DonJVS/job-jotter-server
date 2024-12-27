@@ -1,13 +1,13 @@
-const { google } = require('googleapis');
-const { authorize, listEvents } = require('./googleCalendarHelper');
-
-// Mock fs.promises explicitly
-const fs = require('fs').promises;
+// 1. Mock modules before requiring them
 jest.mock('fs', () => ({
   promises: {
     readFile: jest.fn(),
     writeFile: jest.fn(),
   },
+}));
+
+jest.mock('../db', () => ({
+  query: jest.fn(),
 }));
 
 jest.mock('googleapis', () => ({
@@ -25,15 +25,42 @@ jest.mock('@google-cloud/local-auth', () => ({
   }),
 }));
 
+const path = require('path'); // Now safe to require after mocks
+
+// 2. Define constants after mocks
+const TOKEN_PATH = path.join(process.cwd(), 'token.json');
+const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
+
+// 3. Use describe to structure your tests
 describe('Google Calendar Helper Tests', () => {
+  let authorize, listEvents, saveCredentials;
+  let fs, google, authenticate, db;
+
   beforeEach(() => {
+    // Reset module registry to ensure fresh module for each test
+    jest.resetModules();
     jest.clearAllMocks();
 
-    fs.readFile.mockImplementation((filePath) => {
-      if (filePath.includes('token.json')) {
-        return Promise.reject(new Error('File not found')); // Simulate missing token.json
+    // Re-require the mocked modules and the module under test
+    fs = require('fs').promises;
+    google = require('googleapis').google;
+    authenticate = require('@google-cloud/local-auth').authenticate;
+    db = require('../db');
+    
+    // Re-require the module under test after resetting modules
+    const helper = require('./googleCalendarHelper');
+    authorize = helper.authorize;
+    listEvents = helper.listEvents;
+    saveCredentials = helper.saveCredentials;
+
+    // Set up fs.readFile mock implementation
+    fs.readFile.mockImplementation((filePath, encoding) => {
+      if (filePath === TOKEN_PATH) {
+        // Simulate missing token.json for the 'request new credentials' test
+        return Promise.reject(new Error('File not found'));
       }
-      if (filePath.includes('credentials.json')) {
+      if (filePath === CREDENTIALS_PATH) {
+        // Return valid credentials.json content
         return Promise.resolve(
           JSON.stringify({
             installed: {
@@ -43,47 +70,64 @@ describe('Google Calendar Helper Tests', () => {
           })
         );
       }
-      return Promise.resolve('{}'); // Default case for unexpected file paths
+      // Default case for unexpected file paths
+      return Promise.resolve('{}');
     });
 
-    fs.writeFile.mockResolvedValue(); // Ensure writeFile does not throw errors
+    // Ensure writeFile does not throw errors
+    fs.writeFile.mockResolvedValue();
   });
 
-  // Test loadSavedCredentialsIfExist
+  // 4. Group related tests
   describe('authorize (loadSavedCredentialsIfExist)', () => {
 
     it('should return credentials when token file exists', async () => {
+      // Override fs.readFile to return token.json content
       const mockCredentials = { type: 'authorized_user', refresh_token: 'abc' };
       fs.readFile.mockResolvedValueOnce(JSON.stringify(mockCredentials));
       google.auth.fromJSON.mockReturnValue(mockCredentials);
 
+      // Call authorize
       const credentials = await authorize();
 
-      expect(fs.readFile).toHaveBeenCalledWith(expect.stringContaining('token.json'));
+      // Assertions
+      expect(fs.readFile).toHaveBeenCalledWith(TOKEN_PATH, 'utf-8');
       expect(google.auth.fromJSON).toHaveBeenCalledWith(mockCredentials);
       expect(credentials).toEqual(mockCredentials);
     });
 
     it('should request new credentials when token file does not exist', async () => {
+      // Simulate authenticate returning a mock OAuth2 client
       const mockOAuth2Client = { credentials: { refresh_token: 'mock_refresh_token' } };
-      const { authenticate } = require('@google-cloud/local-auth');
       authenticate.mockResolvedValueOnce(mockOAuth2Client);
 
+      // Call authorize
       const client = await authorize();
 
-      expect(fs.readFile).toHaveBeenCalledWith(expect.stringContaining('token.json'));
-      expect(authenticate).toHaveBeenCalled();
+      // Assertions
+      expect(fs.readFile).toHaveBeenCalledWith(TOKEN_PATH, 'utf-8');
+      expect(authenticate).toHaveBeenCalledWith({
+        scopes: [
+          'https://www.googleapis.com/auth/calendar.readonly',
+          'https://www.googleapis.com/auth/calendar',
+        ],
+        keyfilePath: CREDENTIALS_PATH,
+        port: 5002,
+      });
       expect(fs.writeFile).toHaveBeenCalledWith(
-        expect.stringContaining('token.json'),
+        TOKEN_PATH,
         expect.stringContaining('mock_refresh_token')
       );
       expect(client).toEqual(mockOAuth2Client);
     });
   });
 
+
+
   // Test saveCredentials
   describe('saveCredentials', () => {
     it('should save credentials to the token file', async () => {
+      const fs = require('fs').promises;
       const mockClient = { credentials: { refresh_token: 'mock_refresh_token' } };
       const mockKey = {
         installed: {
@@ -97,9 +141,9 @@ describe('Google Calendar Helper Tests', () => {
       const { saveCredentials } = require('./googleCalendarHelper');
       await saveCredentials(mockClient);
 
-      expect(fs.readFile).toHaveBeenCalledWith(expect.stringContaining('credentials.json'));
+      expect(fs.readFile).toHaveBeenCalledWith(CREDENTIALS_PATH, 'utf-8');;
       expect(fs.writeFile).toHaveBeenCalledWith(
-        expect.stringContaining('token.json'),
+        TOKEN_PATH,
         expect.stringContaining('mock_refresh_token')
       );
     });

@@ -4,14 +4,14 @@ const db = require("../db.js");
 const { NotFoundError, BadRequestError } = require("../expressError");
 const Application = require("./Application");
 const {
-  commonBeforeAll,
+  commonBeforeAllModels,
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
   testApplicationIds,
-} = require("./_testCommon");
+} = require("../test/common/models/_testCommon");
 
-beforeAll(commonBeforeAll);
+beforeAll(commonBeforeAllModels);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);

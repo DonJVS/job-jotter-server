@@ -8,14 +8,13 @@ const {
 const db = require("../db.js");
 const User = require("./User.js");
 const {
-  commonBeforeAll,
+  commonBeforeAllModels,
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  testApplicationIds,
-} = require("./_testCommon.js");
+} = require("../test/common/models/_testCommon");
 
-beforeAll(commonBeforeAll);
+beforeAll(commonBeforeAllModels);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);

@@ -4,15 +4,15 @@ const db = require("../db");
 const { NotFoundError, BadRequestError } = require("../expressError");
 const Reminder = require("./Reminder");
 const {
-  commonBeforeAll,
+  commonBeforeAllModels,
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  testApplicationIds,
   testReminderIds,
-} = require("./_testCommon");
+  testApplicationIds,
+} = require("../test/common/models/_testCommon");
 
-beforeAll(commonBeforeAll);
+beforeAll(commonBeforeAllModels);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);

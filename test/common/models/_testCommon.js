@@ -1,18 +1,14 @@
 "use strict";
 
 const bcrypt = require("bcrypt");
-const db = require("../db.js");
-const { BCRYPT_WORK_FACTOR } = require("../config");
+const db = require("../../../db.js");
+const { BCRYPT_WORK_FACTOR } = require("../../../config");
+const common = require("../_testCommon");
 
-const testApplicationIds = [];
-const testInterviewIds = [];
-const testReminderIds = [];
-
-async function commonBeforeAll() {
+async function commonBeforeAllModels() {
+  await common.commonBeforeAll();
 
   try {
-    // Clear all tables and reset identities
-    await db.query("TRUNCATE reminders, interviews, applications, users RESTART IDENTITY CASCADE");
 
     // Insert Users
     const hashedPasswords = await Promise.all([
@@ -41,7 +37,7 @@ async function commonBeforeAll() {
       RETURNING id
       `
     );
-    testApplicationIds.push(...applications.rows.map((row) => row.id));
+    common.testApplicationIds.push(...applications.rows.map((row) => row.id));
 
 
 
@@ -54,9 +50,9 @@ async function commonBeforeAll() {
         ($2, '2024-12-10', '14:00:00', 'Virtual', 'Panel interview via Zoom.')
       RETURNING id
       `,
-      [testApplicationIds[2], testApplicationIds[1]]
+      [common.testApplicationIds[2], common.testApplicationIds[1]]
     );
-    testInterviewIds.push(...interviews.rows.map((row) => row.id));
+    common.testInterviewIds.push(...interviews.rows.map((row) => row.id));
 
 
     // Insert Reminders
@@ -69,34 +65,23 @@ async function commonBeforeAll() {
         ($3, 2, 'Deadline', '2024-11-30', 'Submit coding challenge for InnovateInc.')
       RETURNING id
       `,
-      [testApplicationIds[0], testApplicationIds[1], testApplicationIds[2]] 
+      [common.testApplicationIds[0], common.testApplicationIds[1], common.testApplicationIds[2]] 
     );
-    testReminderIds.push(...reminders.rows.map((row) => row.id));
+    common.testReminderIds.push(...reminders.rows.map((row) => row.id));
 
   } catch (err) {
-    console.error("Error in commonBeforeAll:", err);
+    console.error("Error in commonBeforeAllModels:", err);
     throw err;
   }
 }
 
-async function commonBeforeEach() {
-  await db.query("BEGIN");
-}
-
-async function commonAfterEach() {
-  await db.query("ROLLBACK");
-}
-
-async function commonAfterAll() {
-  await db.end();
-}
-
 module.exports = {
-  commonBeforeAll,
-  commonBeforeEach,
-  commonAfterEach,
-  commonAfterAll,
-  testApplicationIds,
-  testInterviewIds,
-  testReminderIds,
+  commonBeforeAllModels, // Exported from shared _testCommon.js, overridden here
+  commonBeforeEach: common.commonBeforeEach,
+  commonAfterEach: common.commonAfterEach,
+  commonAfterAll: common.commonAfterAll,
+  testApplicationIds: common.testApplicationIds,
+  testInterviewIds: common.testInterviewIds,
+  testUserTokens: common.testUserTokens,   
+  testReminderIds: common.testReminderIds,
 };

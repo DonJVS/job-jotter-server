@@ -14,12 +14,17 @@ const interviewRoutes = require("./routes/interviews");
 const reminderRoutes = require("./routes/reminders");
 const oauthRouter = require("./routes/oauthRouter");
 const googleCalendarRoutes = require("./routes/googleCalendarRoutes");
+const { authorize, listEvents } = require('./helpers/googleCalendarHelper');
 
 const healthRoutes = require("./routes/health");
 
 const { authenticateJWT } = require("./middleware/auth");
 
 const app = express();
+
+authorize()
+  .then(listEvents)
+  .catch(console.error);
 
 //CORS setup
 const allowedOrigins = [

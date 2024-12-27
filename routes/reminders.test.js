@@ -3,17 +3,17 @@
 const request = require("supertest");
 const app = require("../app");
 const db = require("../db");
-const { 
-  commonBeforeAll, 
-  commonBeforeEach, 
-  commonAfterEach, 
-  commonAfterAll, 
-  testUserTokens, 
-  testReminderIds, 
-  testApplicationIds
-} = require("./_testCommon");
+const {
+  commonBeforeAllRoutes,
+  commonBeforeEach,
+  commonAfterEach,
+  commonAfterAll,
+  testReminderIds,
+  testApplicationIds,
+  testUserTokens,
+} = require("../test/common/routes/_testCommon");
 
-beforeAll(commonBeforeAll);
+beforeAll(commonBeforeAllRoutes);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);

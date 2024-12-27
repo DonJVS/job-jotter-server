@@ -7,17 +7,15 @@ const app = require("../app");
 const User = require("../models/User");
 
 const {
-  commonBeforeAll,
+  commonBeforeAllRoutes,
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  testUserTokens,
   testApplicationIds,
-} = require("./_testCommon");
+  testUserTokens,
+} = require("../test/common/routes/_testCommon");
 
-beforeAll(async () => {
-  await commonBeforeAll();
-});
+beforeAll(commonBeforeAllRoutes);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);

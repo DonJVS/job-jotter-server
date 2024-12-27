@@ -1,24 +1,17 @@
 "use strict";
 
 const bcrypt = require("bcrypt");
-const db = require("../db.js");
-const { BCRYPT_WORK_FACTOR } = require("../config");
-const { createToken } = require("../helpers/tokens");
-const { SECRET_KEY } = require("../config");
+const db = require("../../../db.js");
+const { BCRYPT_WORK_FACTOR } = require("../../../config.js");
+const { createToken } = require("../../../helpers/tokens.js");
+const common = require("../_testCommon");
 
-const testUserTokens = {};
-const testApplicationIds = [];
-const testInterviewIds = [];
-const testReminderIds = [];
 
 /** Common test setup for routes */
-async function commonBeforeAll() {
-  console.log("Starting commonBeforeAll...");
+async function commonBeforeAllRoutes() {
+  await common.commonBeforeAll();
 
   try {
-    // Clear all tables and reset identities
-    await db.query("TRUNCATE reminders, interviews, applications, users RESTART IDENTITY CASCADE");
-    console.log("Tables truncated successfully.");
     // Insert test users
     const hashedPasswords = await Promise.all([
       bcrypt.hash("password1", BCRYPT_WORK_FACTOR),
@@ -38,11 +31,11 @@ async function commonBeforeAll() {
 
     // Generate tokens for test users
     users.rows.forEach((user) => {
-      testUserTokens[user.username] = createToken({ id: user.id, username: user.username, isAdmin: user.isAdmin });
+      common.testUserTokens[user.username] = createToken({ id: user.id, username: user.username, isAdmin: user.isAdmin });
     });
 
     // Add admin token specifically for ease of access
-    testUserTokens.admin = createToken({
+    common.testUserTokens.admin = createToken({
       id: users.rows[0].id, // Assuming first user is the admin
       username: users.rows[0].username,
       isAdmin: true,
@@ -59,7 +52,7 @@ async function commonBeforeAll() {
       RETURNING id
       `
     );
-    testApplicationIds.push(...applications.rows.map((r) => r.id));
+    common.testApplicationIds.push(...applications.rows.map((r) => r.id));
 
     // Insert interviews
     const interviews = await db.query(
@@ -70,10 +63,10 @@ async function commonBeforeAll() {
         ($2, '2024-12-10', '14:00:00', 'Virtual', 'Panel interview via Zoom.')
       RETURNING id
       `,
-      [testApplicationIds[0], testApplicationIds[1]]
+      [common.testApplicationIds[0], common.testApplicationIds[1]]
     );
 
-    testInterviewIds.push(...interviews.rows.map((r) => r.id));
+    common.testInterviewIds.push(...interviews.rows.map((r) => r.id));
 
     // Insert reminders
     const reminders = await db.query(
@@ -85,9 +78,9 @@ async function commonBeforeAll() {
         (2, $3, 'Deadline', '2024-11-30', 'Submit coding challenge for InnovateInc.')
       RETURNING id
       `,
-      [testApplicationIds[0], testApplicationIds[1], testApplicationIds[2]]
+      [common.testApplicationIds[0], common.testApplicationIds[1], common.testApplicationIds[2]]
     );
-    testReminderIds.push(...reminders.rows.map((r) => r.id));
+    common.testReminderIds.push(...reminders.rows.map((r) => r.id));
 
   } catch (err) {
     console.error("Error in commonBeforeAll:", err);
@@ -95,30 +88,15 @@ async function commonBeforeAll() {
   }
 }
 
-async function commonBeforeEach() {
-  await db.query("BEGIN");
-}
-
-async function commonAfterEach() {
-  await db.query("ROLLBACK");
-}
-
-async function commonAfterAll() {
-  try {
-    await db.end();
-  } catch (err) {
-    console.error("Error closing database connection:", err);
-  }
-}
 
 
 module.exports = {
-  commonBeforeAll,
-  commonBeforeEach,
-  commonAfterEach,
-  commonAfterAll,
-  testUserTokens,
-  testApplicationIds,
-  testInterviewIds,
-  testReminderIds,
+  commonBeforeAllRoutes, // Exported from shared _testCommon.js, overridden here
+  commonBeforeEach: common.commonBeforeEach,
+  commonAfterEach: common.commonAfterEach,
+  commonAfterAll: common.commonAfterAll,
+  testApplicationIds: common.testApplicationIds,
+  testInterviewIds: common.testInterviewIds,
+  testUserTokens: common.testUserTokens,   
+  testReminderIds: common.testReminderIds,
 };

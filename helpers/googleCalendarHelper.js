@@ -25,11 +25,16 @@ let cachedClient;
  */
 async function loadSavedCredentialsIfExist() {
   try {
-    const content = await fs.readFile(TOKEN_PATH);
+    const content = await fs.readFile(TOKEN_PATH, 'utf-8');
+    if (!content || content.trim() === '') {
+      console.warn('Token file is empty');
+      return null; // Return null explicitly for empty file
+    }
     const credentials = JSON.parse(content);
     return google.auth.fromJSON(credentials);
   } catch (err) {
-    return null;
+    console.error('Failed to load saved credentials:', err.message);
+    return null; // Return null if credentials cannot be loaded
   }
 }
 
@@ -40,17 +45,26 @@ async function loadSavedCredentialsIfExist() {
  * @return {Promise<void>}
  */
 async function saveCredentials(client) {
-  const content = await fs.readFile(CREDENTIALS_PATH);
-  const keys = JSON.parse(content);
-  const key = keys.installed || keys.web;
-  const payload = JSON.stringify({
-    type: 'authorized_user',
-    client_id: key.client_id,
-    client_secret: key.client_secret,
-    refresh_token: client.credentials.refresh_token,
-  });
-  await fs.writeFile(TOKEN_PATH, payload);
+  try {
+    const content = await fs.readFile(CREDENTIALS_PATH, 'utf-8');
+    if (!content || content.trim() === '') {
+      throw new Error('Credentials file is empty or missing');
+    }
+    const keys = JSON.parse(content);
+    const key = keys.installed || keys.web;
+    const payload = JSON.stringify({
+      type: 'authorized_user',
+      client_id: key.client_id,
+      client_secret: key.client_secret,
+      refresh_token: client.credentials.refresh_token,
+    });
+    await fs.writeFile(TOKEN_PATH, payload);
+  } catch (err) {
+    console.error('Failed to save credentials:', err.message);
+    throw err; // Re-throw to handle it upstream
+  }
 }
+
 
 /**
  * Load or request or authorization to call APIs.
@@ -113,7 +127,7 @@ async function authorize(userId) {
     }
 
     return oauth2Client;
-    
+
   } else {
     let client = await loadSavedCredentialsIfExist();
     if (!client) {
@@ -162,7 +176,6 @@ async function listEvents(auth) {
   return res.data.items || [];
 }
 
-authorize().then(listEvents).catch(console.error);
 
 module.exports = {
   authorize,
