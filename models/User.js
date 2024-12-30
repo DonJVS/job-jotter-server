@@ -102,7 +102,8 @@ class User {
               username, 
               first_name AS "firstName", 
               last_name AS "lastName", 
-              email, 
+              email,
+              password, 
               is_admin AS "isAdmin"
        FROM users
        WHERE username = $1`,
@@ -202,36 +203,29 @@ class User {
    * Throws NotFoundError if application or user does not exist.
    */
   static async applyToJob(username, applicationId) {
-    const appCheck = await db.query(
-      `SELECT id
-       FROM applications
-       WHERE id = $1`,
-      [applicationId]
+    const result = await db.query(
+      `SELECT a.id AS application_id, u.id AS user_id
+       FROM applications a
+       JOIN users u ON u.username = $1
+       WHERE a.id = $2`,
+      [username, applicationId]
     );
-
-    if (!appCheck.rows[0]) {
-      throw new NotFoundError(`No application: ${applicationId}`);
+  
+    if (!result.rows[0]) {
+      throw new NotFoundError(
+        `No user with username: ${username} or no application with id: ${applicationId}`
+      );
     }
-
-    const userCheck = await db.query(
-      `SELECT id AS user_id
-       FROM users
-       WHERE username = $1`,
-      [username]
-    );
-
-    if (!userCheck.rows[0]) {
-      throw new NotFoundError(`No user: ${username}`);
-    }
-
-    const userId = userCheck.rows[0].user_id;
-
+  
+    const { application_id, user_id } = result.rows[0];
+  
     await db.query(
       `INSERT INTO user_applications (application_id, user_id)
        VALUES ($1, $2)`,
-      [applicationId, userId]
+      [application_id, user_id]
     );
   }
+  
 }
 
 module.exports = User;

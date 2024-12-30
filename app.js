@@ -57,7 +57,12 @@ app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(morgan("tiny"));
-app.use(authenticateJWT);
+app.use((req, res, next) => {
+  if (req.path !== "/auth/token") {
+    return authenticateJWT(req, res, next);
+  }
+  next();
+});
 
 // Routes
 app.use("/auth", authRoutes);

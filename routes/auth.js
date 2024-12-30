@@ -4,11 +4,29 @@
 
 const User = require("../models/User");
 const express = require("express");
+const rateLimit = require("express-rate-limit");
 const router = new express.Router();
 const { createToken } = require("../helpers/tokens");
 const validateSchema = require("../middleware/validation");
 const userAuthSchema = require("../schemas/userAuth.json");
 const userRegisterSchema = require("../schemas/userRegister.json");
+
+
+// Rate limiting setup for login attempts
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 login attempts per windowMs
+  message: {
+    error: "Too many login attempts, please try again later." // Fallback message
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  handler: (req, res, next, options) => {
+    res.status(options.statusCode).json({
+      error: options.message || "Too many requests, please try again later.",
+    });
+  },
+});
 
 /** POST /auth/token:  { username, password } => { token }
  *
@@ -16,7 +34,7 @@ const userRegisterSchema = require("../schemas/userRegister.json");
  *
  * Authorization required: none
  */
-router.post("/token", validateSchema(userAuthSchema), async function (req, res, next) {
+router.post("/token", loginLimiter, validateSchema(userAuthSchema), async function (req, res, next) {
   try {
     const { username, password } = req.body;
     const user = await User.authenticate(username, password);

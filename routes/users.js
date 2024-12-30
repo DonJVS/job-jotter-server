@@ -5,7 +5,8 @@
 const jsonschema = require("jsonschema");
 const express = require("express");
 const { authenticateJWT, ensureCorrectUserOrAdmin, ensureAdmin } = require("../middleware/auth");
-const { BadRequestError } = require("../expressError");
+const bcrypt = require("bcrypt");
+const { BadRequestError, UnauthorizedError } = require("../expressError");
 const User = require("../models/User");
 const { createToken } = require("../helpers/tokens");
 const userNewSchema = require("../schemas/userNew.json");
@@ -91,8 +92,20 @@ router.patch("/:username", ensureCorrectUserOrAdmin, async function (req, res, n
       throw new BadRequestError(errs);
     }
 
-    const user = await User.update(req.params.username, req.body);
-    return res.json({ user });
+    const { password, ...updateData } = req.body;
+
+    if (!password) {
+      throw new BadRequestError("Password is required to update profile.");
+    }
+
+    const user = await User.get(req.params.username);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedError("Incorrect password.");
+    }
+
+    const updatedUser = await User.update(req.params.username, updateData);
+    return res.json({ user: updatedUser });
   } catch (err) {
     return next(err);
   }
